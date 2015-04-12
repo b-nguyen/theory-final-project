@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class SudokuGrid {
@@ -23,7 +25,22 @@ public class SudokuGrid {
 	}
 
 	public void readInput() {
-		Scanner keyboard = new Scanner(System.in);
+		File file = null;
+		Scanner s = null;
+		System.out.println("Input file name: ");
+		Scanner temp = new Scanner(System.in);
+		String fileName = temp.nextLine();
+		temp.close();
+		
+		file = new File(fileName);
+		try {
+			s = new Scanner(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		for (int i = 0; i < size; i++) {
+			// Turn it into the grid
+		}
 	}
 
 	public void printGrid() {
@@ -43,6 +60,7 @@ public class SudokuGrid {
 
 	public static void main(String args[]) {
 		SudokuGrid grid = new SudokuGrid(9);
+		grid.readInput();
 		grid.printGrid();
 	}
 }
