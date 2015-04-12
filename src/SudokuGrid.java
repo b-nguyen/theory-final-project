@@ -38,8 +38,15 @@ public class SudokuGrid {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		for (int i = 0; i < size; i++) {
-			// Turn it into the grid
+		for (int i = 0; i < size; i++) { 
+			String line = s.nextLine().replaceAll("\\s+","");
+			while(line.trim().equals("")) { 
+				line = s.nextLine().replaceAll("\\s+","");
+			}
+			System.out.println(line);
+			for(int j = 0; j < line.length(); j++) { 
+				this.grid[i][j] = Integer.parseInt(line.substring(j,j+1));
+			}
 		}
 	}
 
