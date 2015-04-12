@@ -85,6 +85,34 @@ public class SudokuGrid {
 		}
 		return true;
 	}
+		
+	public boolean checkValidRow(int row) {
+		boolean result = true;
+		for (int i = 0; i < size - 1; i++) {
+			for (int j = i + 1; j < size; j++) {
+				if ((this.grid[row][i] == this.grid[row][j]) && this.grid[row][i] != 0) {
+					//System.out.println(this.grid[row][i]);
+					result = false;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+	
+	public boolean checkValidCol(int col) {
+		boolean result = true;
+		for (int i = 0; i < size - 1; i++) {
+			for (int j = i + 1; j < size; j++) {
+				if ((this.grid[i][col] == this.grid[j][col]) && this.grid[i][col] != 0) {
+					//System.out.println(this.grid[i][col]);
+					result = false;
+					break;
+				}
+			}
+		}
+		return result;
+	}
 
 	public static void main(String args[]) {
 		SudokuGrid grid = new SudokuGrid(9);
