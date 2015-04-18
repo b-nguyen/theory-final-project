@@ -91,7 +91,7 @@ public class SudokuGrid {
 		for (int i = 0; i < size - 1; i++) {
 			for (int j = i + 1; j < size; j++) {
 				if ((this.grid[row][i] == this.grid[row][j]) && this.grid[row][i] != 0) {
-					//System.out.println(this.grid[row][i]);
+					//System.out.println("row" + this.grid[row][i]);
 					result = false;
 					break;
 				}
@@ -105,7 +105,7 @@ public class SudokuGrid {
 		for (int i = 0; i < size - 1; i++) {
 			for (int j = i + 1; j < size; j++) {
 				if ((this.grid[i][col] == this.grid[j][col]) && this.grid[i][col] != 0) {
-					//System.out.println(this.grid[i][col]);
+					//System.out.println(i + "," + col + ": " + this.grid[i][col] + ", " + j + "," + col + ": " + this.grid[j][col]);
 					result = false;
 					break;
 				}
@@ -113,12 +113,110 @@ public class SudokuGrid {
 		}
 		return result;
 	}
+	
+	public boolean checkValid() { 
+		for(int i = 0; i < this.size; i++) { 
+			if(!this.checkValidCol(i))
+				return false; 
+			if(!this.checkValidRow(i))
+				return false; 
+		}
+		for(int i = 0; i < this.size; i += this.length) { 
+			for(int j = 0; j < this.size; j+= this.length) { 
+				if(!this.checkValidSubGrids(i, j, i + this.length - 1, j + this.length - 1))
+						return false; 
+			}
+		}
+		return true;
+	}
+	
+	public void bruteSolve() { 
+		System.out.println("Attempting to solve grid: \n");
+		int i = 0; 
+		int j = 0; 
+		this.bruteSolve(i, j);
+	}
+	
+	public boolean bruteSolve(int i, int j) { // Doesn't work completely yet. Debugging  
+		if(this.grid[i][j] == 0) {
+			boolean check = false;
+			// Add to number till grid is valid 
+			while(!check && this.grid[i][j] < 9) { 
+				this.grid[i][j] += 1; 
+				this.printGrid();
+				System.out.println("---------------------");
+				check = this.checkValid();
+			}
+			// check if number is valid; if it is, move to next number; if it isn't return false; 
+			if(check) { 
+				//move to next number; call same function; 
+				if(j + 1 != this.size) { 
+					check =  this.bruteSolve(i, j + 1);
+				}
+				else if (i + 1 != this.size) { 
+					check =  this.bruteSolve(i + 1, 0);
+				}
+				else {
+					return true;
+				}
+				// if true returned, return true; if false returned
+				// then repeat 
+				while(!check && this.grid[i][j] < 9 && i < this.size && j < this.size) { 
+					while(!check && this.grid[i][j] < 9) { 
+						this.grid[i][j] += 1;
+						this.printGrid();
+						System.out.println("---------------------");
+						check = this.checkValid(); 
+					}
+					if (!check) {
+						this.grid[i][j] = 0; 
+						return false; 
+					}
+					else { 
+						//move to next number; call same function; 
+						if(j + 1 != this.size) { 
+							check =  this.bruteSolve(i, j + 1);
+						}
+						else if (i + 1 != this.size) { 
+							check =  this.bruteSolve(i + 1, 0);
+						}
+						else {
+							return true;
+						}	
+					}
+				}
+				if (!check) {
+					this.grid[i][j] = 0;
+					return false; 
+				}
+				else { 
+					return true;
+				}
+			}
+			else { 
+				
+				return false;
+			}
+		}
+		else { 
+			if(j + 1 != this.size) { 
+				return this.bruteSolve(i, j + 1);
+			}
+			else if (i + 1 != this.size) { 
+				return this.bruteSolve(i + 1, 0);
+			}
+			else {
+				return true;
+			}
+		}
+	}
 
 	public static void main(String args[]) {
 		SudokuGrid grid = new SudokuGrid(9);
 		grid.readInput();
 		grid.printGrid();
-		
-		System.out.print(grid.checkValidSubGrids(0, 0, 2, 2));
+		//System.out.print(grid.checkValid());
+		grid.bruteSolve(); 
+		grid.printGrid(); 
 	}
 }
