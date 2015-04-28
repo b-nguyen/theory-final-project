@@ -8,7 +8,7 @@ public class SudokuGrid {
 	private int length; 
 	private int[][] grid;
 	private Queue<String> changeable; 
-	private StateTree tree; 
+	private ArrayList<StateTree> solutions; 
 
 	public SudokuGrid(int size) {
 		this.size = size;
@@ -20,6 +20,7 @@ public class SudokuGrid {
 			}
 		}
 		this.changeable = new LinkedList<String>();
+		this.solutions = new ArrayList<StateTree>();
 	}
 	
 	public SudokuGrid(SudokuGrid s){
@@ -32,6 +33,7 @@ public class SudokuGrid {
 			}
 		}
 		this.changeable = new LinkedList<String>();
+		this.solutions = new ArrayList<StateTree>();
 	}
 
 	public int[][] getGrid() {
@@ -42,8 +44,14 @@ public class SudokuGrid {
 		return this.size;
 	}
 	
-	public void printStateTree(){ 
-		this.tree.printStateTree();
+	public ArrayList<StateTree> getSolutions(){
+		return this.solutions;
+	}
+	
+	public void printSolutions(){ 
+		for(StateTree solution: this.solutions) { 
+			solution.printStateTree();
+		}
 	}
 
 	public void readInput() {
@@ -91,7 +99,7 @@ public class SudokuGrid {
 	}
 	
 	public void printChangeable(){ 
-		System.out.println(changeable.toString());
+		System.out.println(changeable.toString() + "\n");
 	}
 	
 	private static boolean checkValidSubGrids(int [][] grid, int row_this, int col_this, int row_lim, int col_lim) { 
@@ -236,22 +244,23 @@ public class SudokuGrid {
 		}
 	}*/
 	
-	public StateTree createStateTree() { 
+	public void solve() { 
 		// current state is this state
 		// create tree from this state to next possible states where you are changing the next changeable value in the queue
-		if(this.tree != null){
-			return null;
+		if(!this.solutions.isEmpty()){
+			return ;
 		}
-		this.tree = new StateTree(this.getGrid(), 0); 
+		StateTree temp = new StateTree(this.getGrid(), 0); 
 		// For the first item in queue, add all possible values for that position as different leaves for state tree
 		// For each of those leaves, go through same as above 
 		Queue<StateTree> source = new LinkedList<StateTree>(); 
-		source.add(this.tree);
+		source.add(temp);
 		int depth = 0; 
+		//StateTree answer = null; 
 		while(!source.isEmpty() || !this.changeable.isEmpty()) { 
-			if(this.changeable.size() == 43){
-				System.out.println(this.changeable.size());
-			}
+			//if(this.changeable.size() == 43){
+			//System.out.println(this.changeable.size() + "    " + source.size());
+			//}
 			StateTree t = source.poll();
 			if(t == null) { 
 				continue;
@@ -261,12 +270,15 @@ public class SudokuGrid {
 				t = null; 
 				continue;
 			}
-//			t.printStateTree();
-//			System.out.println("---------------------------");
 			String [] index; 
 			if(t.getDepth() != depth) { 
 				this.changeable.poll();
 				depth = t.getDepth(); 
+			}
+			if(this.changeable.isEmpty()){ 
+				//answer = t;
+				source.add(t); 
+				break;
 			}
 			index = this.changeable.peek().split(",");
 			int x = Integer.parseInt(index[0]); 
@@ -291,30 +303,26 @@ public class SudokuGrid {
 				}
 			}
 			t.delete();
-			t = null; 
+			t = null;
 		}
-		StateTree answer = null; 
+		ArrayList<StateTree> answers = new ArrayList<StateTree>(); 
 		while (!source.isEmpty()) {
-			answer = source.poll(); 
-			if(SudokuGrid.checkValid(answer.getState())) { 
-				answer = null; 
-			}
+			answers.add(source.poll());
 		}
-		if (answer != null) { 
-			return answer;
-		}
-		return null;
+		this.solutions.addAll(answers); 
 	}
 
 	public static void main(String args[]) {
-		SudokuGrid grid = new SudokuGrid(9);
+		Scanner kb = new Scanner(System.in); 
+		System.out.println("Enter the size of the nxn sudoku puzzle you want to solve: "); 
+		int size = kb.nextInt(); 
+		SudokuGrid grid = new SudokuGrid(size);
 		grid.readInput();
 		grid.printGrid();
-		//System.out.print(grid.checkValid());
-		//grid.bruteSolve(); 
-		//grid.solve(); 
-		grid.printChangeable(); 
-		grid.createStateTree().printStateTree();
-		//grid.printStateTree();
+		System.out.println("----------------------");
+		grid.solve(); 
+		if(grid.getSolutions() != null) { 
+			grid.printSolutions();
+		}
 	}
 }

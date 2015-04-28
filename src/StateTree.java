@@ -19,6 +19,16 @@ public class StateTree {
 		this.invalid = invalid;
 	}
 	
+	public StateTree(StateTree t) { 
+		this.depth = t.depth; 
+		this.invalid = t.invalid; 
+		for(int i = 0; i < t.getState().length; i++){ 
+			for(int j = 0; j < t.getState()[i].length; j++) { 
+				this.state[i][j] = t.getState()[i][j];
+			}
+		}
+	}
+	
 	public void delete(){
 		state = null; 
 		depth = 0;
