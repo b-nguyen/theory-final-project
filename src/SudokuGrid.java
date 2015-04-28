@@ -1,14 +1,14 @@
 import java.awt.List;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.Scanner;
 import java.util.*;
 
 public class SudokuGrid {
 	private int size;
 	private int length; 
 	private int[][] grid;
+	private Queue<String> changeable; 
+	private StateTree tree; 
 
 	public SudokuGrid(int size) {
 		this.size = size;
@@ -19,6 +19,19 @@ public class SudokuGrid {
 				grid[i][j] = 0;
 			}
 		}
+		this.changeable = new LinkedList<String>();
+	}
+	
+	public SudokuGrid(SudokuGrid s){
+		this.size = s.size;
+		this.length = s.length;
+		this.grid = new int[size][size];
+		for(int i = 0; i < grid.length; i++){
+			for(int j = 0; j < grid[i].length; j++) { 
+				this.grid[i][j] = s.getGrid()[i][j];
+			}
+		}
+		this.changeable = new LinkedList<String>();
 	}
 
 	public int[][] getGrid() {
@@ -28,14 +41,18 @@ public class SudokuGrid {
 	public int getSize() {
 		return this.size;
 	}
+	
+	public void printStateTree(){ 
+		this.tree.printStateTree();
+	}
 
 	public void readInput() {
 		File file = null;
 		Scanner s = null;
 		System.out.println("Input file name: ");
-		Scanner temp = new Scanner(System.in);
-		String fileName = temp.nextLine();
-		temp.close();
+		s = new Scanner(System.in);
+		String fileName = s.nextLine();
+		s.close();
 		
 		file = new File(fileName);
 		try {
@@ -51,6 +68,9 @@ public class SudokuGrid {
 			//System.out.println(line);
 			for(int j = 0; j < line.length(); j++) { 
 				this.grid[i][j] = Integer.parseInt(line.substring(j,j+1));
+				if (this.grid[i][j] == 0){ 
+					changeable.add("" + i + "," + j); 
+				}
 			}
 		}
 	}
@@ -70,10 +90,14 @@ public class SudokuGrid {
 		}
 	}
 	
-	public boolean checkValidSubGrids(int row_start, int col_start, int row_lim, int col_lim) { 
+	public void printChangeable(){ 
+		System.out.println(changeable.toString());
+	}
+	
+	public boolean checkValidSubGrids(int row_this, int col_this, int row_lim, int col_lim) { 
 		ArrayList<Integer> l = new ArrayList<Integer>();
-		for(int x = row_start; x <= row_lim; x++) { 
-			for(int y = col_start; y<= col_lim; y++) { 
+		for(int x = row_this; x <= row_lim; x++) { 
+			for(int y = col_this; y<= col_lim; y++) { 
 				if(this.grid[x][y] != 0) { 
 					l.add(this.grid[x][y]);
 				}
@@ -131,7 +155,7 @@ public class SudokuGrid {
 	}
 	
 	public void bruteSolve() { 
-		System.out.println("Attempting to solve grid: \n");
+		System.out.println("Atthis.changeableting to solve grid: \n");
 		int i = 0; 
 		int j = 0; 
 		this.bruteSolve(i, j);
@@ -210,13 +234,65 @@ public class SudokuGrid {
 			}
 		}
 	}
+	
+	public boolean createStateTree() { 
+		// current state is this state
+		// create tree from this state to next possible states where you are changing the next changeable value in the queue
+		if(this.tree != null){
+			return false;
+		}
+		this.tree = new StateTree(this, 0); 
+		// For the first item in queue, add all possible values for that position as different leaves for state tree
+		// For each of those leaves, go through same as above 
+		Queue<StateTree> source = new LinkedList<StateTree>(); 
+		source.add(this.tree);
+		int depth = 0; 
+		while(!source.isEmpty() || !this.changeable.isEmpty()) { 
+			StateTree t = source.poll();
+			if(t.getInvalid()) { 
+				t.delete();
+				t = null; 
+				continue;
+			}
+			t.printStateTree();
+			System.out.println("---------------------------");
+			String [] index; 
+			if(t.getDepth() != depth) { 
+				this.changeable.poll();
+				depth = t.getDepth(); 
+			}
+			index = this.changeable.peek().split(",");
+			int x = Integer.parseInt(index[0]); 
+			int y = Integer.parseInt(index[1]); 
+			int num = t.getState().getGrid()[x][y]; 
+			while (num < 9){ 
+				num += 1; 
+				SudokuGrid newGrid = new SudokuGrid(t.getState()); 
+				newGrid.getGrid()[x][y] = num; 
+				StateTree newTree;
+				if(!newGrid.checkValid()) { 
+					newTree = new StateTree(newGrid, depth + 1, true); 
+				}
+				else { 
+					newTree = new StateTree(newGrid, depth + 1);
+				}
+				source.add(newTree);
+			}
+			t.delete();
+			t = null; 
+		}
+		return true;
+	}
 
 	public static void main(String args[]) {
 		SudokuGrid grid = new SudokuGrid(9);
 		grid.readInput();
 		grid.printGrid();
 		//System.out.print(grid.checkValid());
-		grid.bruteSolve(); 
-		grid.printGrid(); 
+		//grid.bruteSolve(); 
+		//grid.solve(); 
+		grid.printChangeable(); 
+		System.out.println(grid.createStateTree());
+		//grid.printStateTree();
 	}
 }
