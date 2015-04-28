@@ -94,12 +94,12 @@ public class SudokuGrid {
 		System.out.println(changeable.toString());
 	}
 	
-	public boolean checkValidSubGrids(int row_this, int col_this, int row_lim, int col_lim) { 
+	private static boolean checkValidSubGrids(int [][] grid, int row_this, int col_this, int row_lim, int col_lim) { 
 		ArrayList<Integer> l = new ArrayList<Integer>();
 		for(int x = row_this; x <= row_lim; x++) { 
 			for(int y = col_this; y<= col_lim; y++) { 
-				if(this.grid[x][y] != 0) { 
-					l.add(this.grid[x][y]);
+				if(grid[x][y] != 0) { 
+					l.add(grid[x][y]);
 				}
 			}
 		}
@@ -110,11 +110,11 @@ public class SudokuGrid {
 		return true;
 	}
 		
-	public boolean checkValidRow(int row) {
+	private static boolean checkValidRow(int [][] grid, int row) {
 		boolean result = true;
-		for (int i = 0; i < size - 1; i++) {
-			for (int j = i + 1; j < size; j++) {
-				if ((this.grid[row][i] == this.grid[row][j]) && this.grid[row][i] != 0) {
+		for (int i = 0; i < grid.length - 1; i++) {
+			for (int j = i + 1; j < grid.length; j++) {
+				if ((grid[row][i] == grid[row][j]) && grid[row][i] != 0) {
 					//System.out.println("row" + this.grid[row][i]);
 					result = false;
 					break;
@@ -124,11 +124,11 @@ public class SudokuGrid {
 		return result;
 	}
 	
-	public boolean checkValidCol(int col) {
+	private static boolean checkValidCol(int [][] grid, int col) {
 		boolean result = true;
-		for (int i = 0; i < size - 1; i++) {
-			for (int j = i + 1; j < size; j++) {
-				if ((this.grid[i][col] == this.grid[j][col]) && this.grid[i][col] != 0) {
+		for (int i = 0; i < grid.length - 1; i++) {
+			for (int j = i + 1; j < grid.length; j++) {
+				if ((grid[i][col] == grid[j][col]) && grid[i][col] != 0) {
 					//System.out.println(i + "," + col + ": " + this.grid[i][col] + ", " + j + "," + col + ": " + this.grid[j][col]);
 					result = false;
 					break;
@@ -138,30 +138,31 @@ public class SudokuGrid {
 		return result;
 	}
 	
-	public boolean checkValid() { 
-		for(int i = 0; i < this.size; i++) { 
-			if(!this.checkValidCol(i))
+	public static boolean checkValid(int [][] grid) { 
+		for(int i = 0; i < grid.length; i++) { 
+			if(!SudokuGrid.checkValidCol(grid, i))
 				return false; 
-			if(!this.checkValidRow(i))
+			if(!SudokuGrid.checkValidRow(grid, i))
 				return false; 
 		}
-		for(int i = 0; i < this.size; i += this.length) { 
-			for(int j = 0; j < this.size; j+= this.length) { 
-				if(!this.checkValidSubGrids(i, j, i + this.length - 1, j + this.length - 1))
+		int length = (int) Math.sqrt(grid.length);
+		for(int i = 0; i < grid.length; i += length) { 
+			for(int j = 0; j < grid.length; j+= length) { 
+				if(!SudokuGrid.checkValidSubGrids(grid, i, j, i +  - 1, j + length - 1))
 						return false; 
 			}
 		}
 		return true;
 	}
 	
-	public void bruteSolve() { 
+	/*public void bruteSolve() { 
 		System.out.println("Atthis.changeableting to solve grid: \n");
 		int i = 0; 
 		int j = 0; 
 		this.bruteSolve(i, j);
-	}
+	}*/
 	
-	public boolean bruteSolve(int i, int j) { // Doesn't work completely yet. Debugging  
+	/*public boolean bruteSolve(int i, int j) { // Doesn't work completely yet. Debugging  
 		if(this.grid[i][j] == 0) {
 			boolean check = false;
 			// Add to number till grid is valid 
@@ -169,7 +170,7 @@ public class SudokuGrid {
 				this.grid[i][j] += 1; 
 				this.printGrid();
 				System.out.println("---------------------");
-				check = this.checkValid();
+				check = SudokuGrid.checkValid();
 			}
 			// check if number is valid; if it is, move to next number; if it isn't return false; 
 			if(check) { 
@@ -233,29 +234,35 @@ public class SudokuGrid {
 				return true;
 			}
 		}
-	}
+	}*/
 	
-	public boolean createStateTree() { 
+	public StateTree createStateTree() { 
 		// current state is this state
 		// create tree from this state to next possible states where you are changing the next changeable value in the queue
 		if(this.tree != null){
-			return false;
+			return null;
 		}
-		this.tree = new StateTree(this, 0); 
+		this.tree = new StateTree(this.getGrid(), 0); 
 		// For the first item in queue, add all possible values for that position as different leaves for state tree
 		// For each of those leaves, go through same as above 
 		Queue<StateTree> source = new LinkedList<StateTree>(); 
 		source.add(this.tree);
 		int depth = 0; 
 		while(!source.isEmpty() || !this.changeable.isEmpty()) { 
+			if(this.changeable.size() == 43){
+				System.out.println(this.changeable.size());
+			}
 			StateTree t = source.poll();
+			if(t == null) { 
+				continue;
+			}
 			if(t.getInvalid()) { 
 				t.delete();
 				t = null; 
 				continue;
 			}
-			t.printStateTree();
-			System.out.println("---------------------------");
+//			t.printStateTree();
+//			System.out.println("---------------------------");
 			String [] index; 
 			if(t.getDepth() != depth) { 
 				this.changeable.poll();
@@ -264,24 +271,39 @@ public class SudokuGrid {
 			index = this.changeable.peek().split(",");
 			int x = Integer.parseInt(index[0]); 
 			int y = Integer.parseInt(index[1]); 
-			int num = t.getState().getGrid()[x][y]; 
+			int num = t.getState()[x][y]; 
 			while (num < 9){ 
 				num += 1; 
-				SudokuGrid newGrid = new SudokuGrid(t.getState()); 
-				newGrid.getGrid()[x][y] = num; 
+				int [][] newGrid = new int [this.size][this.size]; 
+				for(int i = 0; i < this.size; i++) {
+					for(int j = 0; j < this.size; j++){ 
+						newGrid[i][j] = t.getState()[i][j];
+					}
+				}
+				newGrid[x][y] = num; 
 				StateTree newTree;
-				if(!newGrid.checkValid()) { 
-					newTree = new StateTree(newGrid, depth + 1, true); 
+				if(!SudokuGrid.checkValidRow(newGrid, x) || !SudokuGrid.checkValidCol(newGrid, y) || !SudokuGrid.checkValidSubGrids(newGrid, ((int) x / this.length)*3, ((int) y / this.length)*3, (((int) x/this.length))*3 + this.length - 1, (((int) y/this.length))*3 + this.length - 1)) { 
+					//
 				}
 				else { 
 					newTree = new StateTree(newGrid, depth + 1);
+					source.add(newTree);
 				}
-				source.add(newTree);
 			}
 			t.delete();
 			t = null; 
 		}
-		return true;
+		StateTree answer = null; 
+		while (!source.isEmpty()) {
+			answer = source.poll(); 
+			if(SudokuGrid.checkValid(answer.getState())) { 
+				answer = null; 
+			}
+		}
+		if (answer != null) { 
+			return answer;
+		}
+		return null;
 	}
 
 	public static void main(String args[]) {
@@ -292,7 +314,7 @@ public class SudokuGrid {
 		//grid.bruteSolve(); 
 		//grid.solve(); 
 		grid.printChangeable(); 
-		System.out.println(grid.createStateTree());
+		grid.createStateTree().printStateTree();
 		//grid.printStateTree();
 	}
 }

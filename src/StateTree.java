@@ -3,17 +3,17 @@ import java.util.LinkedList;
 
 public class StateTree {
 
-	private SudokuGrid state = null;
+	private int [][] state = null;
 	private int depth;
 	private boolean invalid;
 	
-	public StateTree(SudokuGrid current, int depth){ 
+	public StateTree(int [][] current, int depth){ 
 		this.state = current; 
 		this.depth = depth; 
 		this.invalid = false;
 	}
 	
-	public StateTree(SudokuGrid current, int depth, boolean invalid){ 
+	public StateTree(int [][] current, int depth, boolean invalid){ 
 		this.state = current; 
 		this.depth = depth; 
 		this.invalid = invalid;
@@ -25,7 +25,7 @@ public class StateTree {
 		invalid = false; 
 	}
 	
-	public SudokuGrid getState(){
+	public int [][] getState(){
 		return this.state; 
 	}
 	
@@ -42,7 +42,18 @@ public class StateTree {
 	}
 	
 	public void printStateTree(){
-		this.state.printGrid();
+		for (int i = 0; i < state.length; i++) {
+			for (int j = 0; j < state[i].length; j++) {
+				System.out.print(state[i][j] + " ");
+				if ((j + 1) % (int) Math.sqrt(state.length) == 0) {
+					System.out.print("  ");
+				}
+			}
+			System.out.println();
+			if ((i + 1) % (int) Math.sqrt(state.length) == 0) {
+				System.out.println();
+			}
+		}
 	}
 	
 }
