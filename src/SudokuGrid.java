@@ -8,7 +8,9 @@ public class SudokuGrid {
 	private int length; 
 	private int[][] grid;
 	private Queue<String> changeable; 
-	private ArrayList<StateTree> solutions; 
+	private ArrayList<StateTree> solutions;
+	private int x; 
+	private int y; 
 
 	public SudokuGrid(int size) {
 		this.size = size;
@@ -21,6 +23,8 @@ public class SudokuGrid {
 		}
 		this.changeable = new LinkedList<String>();
 		this.solutions = new ArrayList<StateTree>();
+		this.x = 0; 
+		this.y = 0; 
 	}
 	
 	public SudokuGrid(SudokuGrid s){
@@ -34,6 +38,8 @@ public class SudokuGrid {
 		}
 		this.changeable = new LinkedList<String>();
 		this.solutions = new ArrayList<StateTree>();
+		this.x = 0; 
+		this.y = 0;
 	}
 
 	public int[][] getGrid() {
@@ -51,6 +57,16 @@ public class SudokuGrid {
 	public void printSolutions(){ 
 		for(StateTree solution: this.solutions) { 
 			solution.printStateTree();
+			System.out.println("--------------------------\n");
+		}
+	}
+	
+	private void add(int i) { 
+		this.grid[x][y] = i; 
+		this.y += 1;
+		if(this.y == this.size) { 
+			this.y = 0;
+			this.x += 1; 
 		}
 	}
 
@@ -68,18 +84,27 @@ public class SudokuGrid {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		int cnt = 1;
 		for (int i = 0; i < size; i++) { 
-			String line = s.nextLine().replaceAll("\\s+","");
-			while(line.trim().equals("")) { 
-				line = s.nextLine().replaceAll("\\s+","");
+			if(cnt % (this.length + 1) == 0) { 
+				String temp = s.nextLine();
+				cnt += 1;
 			}
-			//System.out.println(line);
-			for(int j = 0; j < line.length(); j++) { 
-				this.grid[i][j] = Integer.parseInt(line.substring(j,j+1));
-				if (this.grid[i][j] == 0){ 
-					changeable.add("" + i + "," + j); 
+			String line = s.nextLine();
+			System.out.println("'" + line + "'");
+			String [] lines = line.split("   ");
+			for (String l: lines){
+				System.out.println("'" + l + "'");
+				String [] nums = l.split(" "); 
+				for(String n: nums) { 
+					int num = Integer.parseInt(n);
+					if(num == 0){ 
+						this.changeable.add("" + x + "," + y);
+					}
+					this.add(num);
 				}
 			}
+			cnt += 1;
 		}
 	}
 
@@ -257,9 +282,9 @@ public class SudokuGrid {
 		source.add(temp);
 		int depth = 0; 
 		//StateTree answer = null; 
-		while(!source.isEmpty() || !this.changeable.isEmpty()) { 
-			//if(this.changeable.size() == 43){
-			//System.out.println(this.changeable.size() + "    " + source.size());
+		while(!source.isEmpty() && !this.changeable.isEmpty()) { 
+			//if(source.size() == 4 && this.changeable.size() == 115){
+				System.out.println(this.changeable.size() + "    " + source.size());
 			//}
 			StateTree t = source.poll();
 			if(t == null) { 
@@ -281,10 +306,17 @@ public class SudokuGrid {
 				break;
 			}
 			index = this.changeable.peek().split(",");
-			int x = Integer.parseInt(index[0]); 
-			int y = Integer.parseInt(index[1]); 
-			int num = t.getState()[x][y]; 
-			while (num < 9){ 
+			int a = Integer.parseInt(index[0]); 
+			int b = Integer.parseInt(index[1]);
+			/*if(this.changeable.size() == 54) { 
+				System.out.println(a + "," + b); 
+				t.printStateTree();
+			}*/
+			//if(this.changeable.size() == 124){
+			//	t.printStateTree();
+			//}
+			int num = t.getState()[a][b];
+			while (num < this.size){ 
 				num += 1; 
 				int [][] newGrid = new int [this.size][this.size]; 
 				for(int i = 0; i < this.size; i++) {
@@ -292,10 +324,10 @@ public class SudokuGrid {
 						newGrid[i][j] = t.getState()[i][j];
 					}
 				}
-				newGrid[x][y] = num; 
+				newGrid[a][b] = num; 
 				StateTree newTree;
-				if(!SudokuGrid.checkValidRow(newGrid, x) || !SudokuGrid.checkValidCol(newGrid, y) || !SudokuGrid.checkValidSubGrids(newGrid, ((int) x / this.length)*3, ((int) y / this.length)*3, (((int) x/this.length))*3 + this.length - 1, (((int) y/this.length))*3 + this.length - 1)) { 
-					//
+				if(!SudokuGrid.checkValidRow(newGrid, a) || !SudokuGrid.checkValidCol(newGrid, b) || !SudokuGrid.checkValidSubGrids(newGrid, ((int) a / this.length)*this.length, ((int) b / this.length)*this.length, (((int) a/this.length))*this.length + this.length - 1, (((int) b/this.length))*this.length + this.length - 1)) { 
+				//	System.out.println(num + "-" + a + " " + b + " " + ((int) a / this.length)*this.length + " " + ((int) b / this.length)*this.length + " " + ((((int) a/this.length)*this.length) + this.length - 1) + " " + ((((int) b/this.length))*this.length + this.length - 1));
 				}
 				else { 
 					newTree = new StateTree(newGrid, depth + 1);
@@ -315,14 +347,26 @@ public class SudokuGrid {
 	public static void main(String args[]) {
 		Scanner kb = new Scanner(System.in); 
 		System.out.println("Enter the size of the nxn sudoku puzzle you want to solve: "); 
-		int size = kb.nextInt(); 
+		int size = 0; 
+		try { 
+			size = kb.nextInt(); 
+		}
+		catch(InputMismatchException e) {
+			System.out.println("Please enter a valid size.");
+			System.exit(-1);
+		}
 		SudokuGrid grid = new SudokuGrid(size);
 		grid.readInput();
 		grid.printGrid();
-		System.out.println("----------------------");
+		grid.printChangeable();
+		System.out.println("----------------------\n");
 		grid.solve(); 
-		if(grid.getSolutions() != null) { 
+		if(!grid.getSolutions().isEmpty()) { 
+			System.out.println("\n*******SOLUTION(S)*******\n");
 			grid.printSolutions();
+		}
+		else{
+			System.out.println("\nNo solution found.");
 		}
 	}
 }
