@@ -1,3 +1,6 @@
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class ChangeableIndex {
 	private int x;
@@ -36,6 +39,7 @@ public class ChangeableIndex {
 	
 	public void calculateAndSetScore(int [][] grid) {
 		this.score = 0;
+		Set<Integer> values = new HashSet<Integer>();
 		// Calculate sub-grid scores
 		int start_x = ((int) x / grid.length)*grid.length;
 		int start_y = ((int) y / grid.length)*grid.length;
@@ -44,7 +48,7 @@ public class ChangeableIndex {
 		for (int i = start_x; i <= end_x; i++ ) {
 			for (int j = start_y; j <= end_y; j++) {
 				if (grid[x][y] != 0) {
-					score++;
+					values.add(grid[x][y]);
 				}
 			}
 		}
@@ -52,16 +56,17 @@ public class ChangeableIndex {
 		// Calculate score for rows
 		for (int i = 0; i < grid.length; i++) {
 			if (grid[x][i] != 0) {
-				score++;
+				values.add(grid[x][i]);
 			}
 		}
 		
 		// Calculate score for columns
 		for (int i = 0; i < grid.length; i++) {
 			if (grid[i][x] != 0) {
-				score++;
+				values.add(grid[i][y]);
 			}
 		}
+		this.score = values.size();
 	}
 
 	@Override
