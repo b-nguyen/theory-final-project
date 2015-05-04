@@ -307,7 +307,7 @@ public class SudokuGrid {
 		
 		while(!source.isEmpty() && !this.changeable.isEmpty()) { 
 			//if(source.size() == 4 && this.changeable.size() == 115){
-				System.out.println(this.changeable.size() + "    " + source.size());
+			//	System.out.println(this.changeable.size() + "    " + source.size());
 			//}
 			StateTree t = source.poll();
 			if(t == null) { 
