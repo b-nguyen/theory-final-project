@@ -69,7 +69,7 @@ public class SudokuGrid {
 		}
 	}
 	
-	private void add(int i) { 
+	public void add(int i) { 
 		this.grid[x][y] = i; 
 		this.y += 1;
 		if(this.y == this.size) { 
@@ -114,6 +114,10 @@ public class SudokuGrid {
 			}
 			cnt += 1;
 		}
+	}
+
+	public void addChangeable() { 
+		this.changeable.add("" + x + "," + y);
 	}
 
 	public void printGrid() {
@@ -228,8 +232,8 @@ public class SudokuGrid {
 			/*for(int i = tree.getDepth(); i > 0; i--) { 
 				System.out.print("");
 			}*/
-			tree.printStateTree();
-			System.out.println(changesList.size() + "     " + changesList.toString());
+			//tree.printStateTree();
+			//System.out.println(changesList.size() + "     " + changesList.toString());
 			ChangeableIndex temp = changesList.poll();
 			Queue<StateTree> possible = new LinkedList<StateTree>();
 			int a = temp.getX();
@@ -510,6 +514,7 @@ public class SudokuGrid {
 		if(!grid.getSolutions().isEmpty()) { 
 			System.out.println("\n*******SOLUTION(S)*******\n");
 			grid.printSolutions();
+			System.out.println("There are " + grid.getSolutions().size() + " solutions to the puzzle.");
 		}
 		else{
 			System.out.println("\nNo solution found.");
