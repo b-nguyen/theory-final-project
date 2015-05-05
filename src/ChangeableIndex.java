@@ -62,7 +62,7 @@ public class ChangeableIndex {
 		
 		// Calculate score for columns
 		for (int i = 0; i < grid.length; i++) {
-			if (grid[i][x] != 0) {
+			if (grid[i][y] != 0) {
 				values.add(grid[i][y]);
 			}
 		}

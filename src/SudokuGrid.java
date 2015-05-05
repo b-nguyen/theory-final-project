@@ -1,6 +1,10 @@
 import java.awt.List;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.*;
 
 public class SudokuGrid {
@@ -193,6 +197,16 @@ public class SudokuGrid {
 	}
 	
 	public void solveOptimized1() { 
+		PrintWriter writer = null; 
+		try {
+			writer = new PrintWriter("debug.txt", "UTF-8");
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(-1);
+		}
+		
+		final long startTime = System.currentTimeMillis();
 		// current state is this state
 		// create tree from this state to next possible states where you are changing the next changeable value in the queue
 		if(!this.solutions.isEmpty()){
@@ -216,10 +230,13 @@ public class SudokuGrid {
 			changeable2.add(tempIndex);
 		}
 		
+		//System.out.println(this.changeable2.size() + "-->" + this.changeable2.toString());
+		//writer.write(this.changeable2.size() + "-->" + this.changeable2.toString() + "\n");
+		
 		//StateTree answer = null; 
 		while(!source.isEmpty() && !this.changeable2.isEmpty()) { 
 			//if(this.changeable.size() == 220){
-				//System.out.println(this.changeable2.size() + "    " + source.size());
+				System.out.println(this.changeable2.size() + "    " + source.size());
 			//}
 			StateTree t = source.poll();
 			if(t == null) { 
@@ -233,25 +250,32 @@ public class SudokuGrid {
 			String [] index; 
 			if(t.getDepth() != depth) {
 				ChangeableIndex tempIndex = this.changeable2.poll();
-				PriorityQueue <ChangeableIndex> newQueue = new PriorityQueue <ChangeableIndex> (this.size * this.size, new ChangeableScoreComparator());
+				//PriorityQueue <ChangeableIndex> newQueue = new PriorityQueue <ChangeableIndex> (this.size * this.size, new ChangeableScoreComparator());
 				// Update changeable2 with new scores make old one equal to this one
-				for (ChangeableIndex ind: changeable2) {
+				boolean cont = true;
+				int size = this.changeable2.size();
+				ArrayList<ChangeableIndex> changed = new ArrayList<ChangeableIndex>();
+				while (!this.changeable2.isEmpty() && cont) {
+					ChangeableIndex ind = this.changeable2.peek();
 					int start_x = ((int) tempIndex.getX() / grid.length)*grid.length;
 					int start_y = ((int) tempIndex.getY() / grid.length)*grid.length;
 					int end_x = (((int) tempIndex.getX()/grid.length))*grid.length + grid.length - 1;
 					int end_y = (((int) tempIndex.getY()/grid.length))*grid.length + grid.length - 1;
 					if (ind.getX() == tempIndex.getX() || ind.getY() == tempIndex.getY()
 							|| (ind.getX() >= start_x && ind.getX() <= end_x) && (ind.getY() >= start_y && ind.getY() <= end_y)) {
+						ind = this.changeable2.poll(); 
 						ind.calculateAndSetScore(t.getState());
+						changed.add(ind);
 					}
-					newQueue.add(ind);
+
 				}
-				changeable2 = new PriorityQueue<ChangeableIndex>(newQueue);
-				while (!newQueue.isEmpty()) {
+				this.changeable2.addAll(changed);
+				/*while (!newQueue.isEmpty()) {
 					System.out.print(newQueue.poll().toString() + "   ");
 				}
-				System.out.println();
+				System.out.println();*/
 				//System.out.println(this.changeable2.size() + "    " + changeable2.toString());
+				writer.write(this.changeable2.size() + "    " + changeable2.toString() + "\n");
 				depth = t.getDepth(); 
 			}
 			if(this.changeable2.isEmpty()){ 
@@ -289,6 +313,8 @@ public class SudokuGrid {
 			answers.add(source.poll());
 		}
 		this.solutions.addAll(answers); 
+		final long endTime = System.currentTimeMillis();
+		System.out.println("Total time: " + ((endTime - startTime)/1000.0));
 	}
 	
 	public void solve() { 
