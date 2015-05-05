@@ -196,6 +196,103 @@ public class SudokuGrid {
 		return true;
 	}
 	
+	public void solveDepth() { 
+		// if solution(s) already exist, don't do anything
+		if(!this.solutions.isEmpty()) { 
+			return ; 
+		}
+		
+		// Get list of all places in grid with zeros and prioritize based on completion 
+		for (String str: changeable) {
+			String index[] = str.split(",");
+			// Change to changeable2
+			int x = Integer.parseInt(index[0]); 
+			int y = Integer.parseInt(index[1]);
+			/*if(x == 0 && y == 1) { 
+				System.out.print("stop");
+			}*/
+			ChangeableIndex tempIndex = new ChangeableIndex(x, y);
+			tempIndex.calculateAndSetScore(this.grid);
+			changeable2.add(tempIndex);
+		}
+		
+		//Create StateTree 
+		StateTree tree = new StateTree(this.getGrid(), 0);
+		
+		// Send to recursive call
+		recursiveSolve(this.changeable2, tree);
+	}
+
+	private boolean recursiveSolve(PriorityQueue<ChangeableIndex> changesList, StateTree tree){
+		while(!changesList.isEmpty()) {
+			/*for(int i = tree.getDepth(); i > 0; i--) { 
+				System.out.print("");
+			}*/
+			tree.printStateTree();
+			System.out.println(changesList.size() + "     " + changesList.toString());
+			ChangeableIndex temp = changesList.poll();
+			Queue<StateTree> possible = new LinkedList<StateTree>();
+			int a = temp.getX();
+			int b = temp.getY();
+			int num = tree.getState()[a][b];
+			while (num < this.size){ 
+				num += 1; 
+				//
+				//if(!SudokuGrid.checkValidRow(newGrid, a) || !SudokuGrid.checkValidCol(newGrid, b) || !SudokuGrid.checkValidSubGrids(newGrid, ((int) a / this.length)*this.length, ((int) b / this.length)*this.length, (((int) a/this.length))*this.length + this.length - 1, (((int) b/this.length))*this.length + this.length - 1)) {
+				if(temp.getNumList().contains(num)) { 
+					/*if(this.changeable2.size() < 200) { 
+						System.out.println(num + "-" + a + " " + b + " " + ((int) a / this.length)*this.length + " " + ((int) b / this.length)*this.length + " " + ((((int) a/this.length)*this.length) + this.length - 1) + " " + ((((int) b/this.length))*this.length + this.length - 1));
+					}*/
+				}
+				else {
+					int [][] newGrid = new int [this.size][this.size]; 
+					for(int i = 0; i < this.size; i++) {
+						for(int j = 0; j < this.size; j++){ 
+							newGrid[i][j] = tree.getState()[i][j];
+						}
+					}
+					newGrid[a][b] = num; 
+					StateTree newTree;
+					newTree = new StateTree(newGrid, tree.getDepth() + 1);
+					possible.add(newTree);
+				}
+			}
+			while(!possible.isEmpty()) { 
+				StateTree tempTree = possible.poll();
+				PriorityQueue<ChangeableIndex> newChangesList = new PriorityQueue<ChangeableIndex>(this.size * this.size, new ChangeableScoreComparator());
+				for(ChangeableIndex ind: changesList) { 
+					int start_x = ((int) temp.getX() / grid.length)*grid.length;
+					int start_y = ((int) temp.getY() / grid.length)*grid.length;
+					int end_x = (((int) temp.getX()/grid.length))*grid.length + grid.length - 1;
+					int end_y = (((int) temp.getY()/grid.length))*grid.length + grid.length - 1;
+					if (ind.getX() == temp.getX() || ind.getY() == temp.getY()
+							|| (ind.getX() >= start_x && ind.getX() <= end_x) && (ind.getY() >= start_y && ind.getY() <= end_y)) {
+						ChangeableIndex newInd = new ChangeableIndex(ind.getX(), ind.getY());
+						newInd.calculateAndSetScore(tempTree.getState());
+						newChangesList.add(newInd);
+					}
+					else {
+						newChangesList.add(ind);
+					}
+				}
+				if(newChangesList.peek() != null) { 
+					if(newChangesList.peek().getScore() == 9) {
+						return false;
+					}
+				}
+				boolean check = this.recursiveSolve(newChangesList, tempTree);
+				/*if(check) { 
+					return true;
+				}*/
+			}
+			if(possible.isEmpty()) { 
+				return false;
+			}
+		}
+		this.solutions.add(tree);
+		return true;
+	}
+	
 	public void solveOptimized1() { 
 		PrintWriter writer = null; 
 		try {
@@ -235,8 +332,8 @@ public class SudokuGrid {
 		
 		//StateTree answer = null; 
 		while(!source.isEmpty() && !this.changeable2.isEmpty()) { 
-			//if(this.changeable.size() == 220){
-				System.out.println(this.changeable2.size() + "    " + source.size());
+			//if(this.changeable.size() < 170){
+				System.out.println(this.changeable2.size() + "    " + source.size() + "     " + this.changeable2.peek().getScore());
 			//}
 			StateTree t = source.poll();
 			if(t == null) { 
@@ -254,8 +351,9 @@ public class SudokuGrid {
 				// Update changeable2 with new scores make old one equal to this one
 				boolean cont = true;
 				int size = this.changeable2.size();
+				int count = 0; 
 				ArrayList<ChangeableIndex> changed = new ArrayList<ChangeableIndex>();
-				while (!this.changeable2.isEmpty() && cont) {
+				while (!this.changeable2.isEmpty() && count <= size) {
 					ChangeableIndex ind = this.changeable2.peek();
 					int start_x = ((int) tempIndex.getX() / grid.length)*grid.length;
 					int start_y = ((int) tempIndex.getY() / grid.length)*grid.length;
@@ -267,6 +365,7 @@ public class SudokuGrid {
 						ind.calculateAndSetScore(t.getState());
 						changed.add(ind);
 					}
+					count++;
 
 				}
 				this.changeable2.addAll(changed);
@@ -275,7 +374,7 @@ public class SudokuGrid {
 				}
 				System.out.println();*/
 				//System.out.println(this.changeable2.size() + "    " + changeable2.toString());
-				writer.write(this.changeable2.size() + "    " + changeable2.toString() + "\n");
+				//writer.write(this.changeable2.size() + "    " + changeable2.toString() + "\n");
 				depth = t.getDepth(); 
 			}
 			if(this.changeable2.isEmpty()){ 
@@ -298,7 +397,9 @@ public class SudokuGrid {
 				newGrid[a][b] = num; 
 				StateTree newTree;
 				if(!SudokuGrid.checkValidRow(newGrid, a) || !SudokuGrid.checkValidCol(newGrid, b) || !SudokuGrid.checkValidSubGrids(newGrid, ((int) a / this.length)*this.length, ((int) b / this.length)*this.length, (((int) a/this.length))*this.length + this.length - 1, (((int) b/this.length))*this.length + this.length - 1)) { 
-				//	System.out.println(num + "-" + a + " " + b + " " + ((int) a / this.length)*this.length + " " + ((int) b / this.length)*this.length + " " + ((((int) a/this.length)*this.length) + this.length - 1) + " " + ((((int) b/this.length))*this.length + this.length - 1));
+					//if(this.changeable2.size() < 200) { 
+						//System.out.println(num + "-" + a + " " + b + " " + ((int) a / this.length)*this.length + " " + ((int) b / this.length)*this.length + " " + ((((int) a/this.length)*this.length) + this.length - 1) + " " + ((((int) b/this.length))*this.length + this.length - 1));
+					//}
 				}
 				else { 
 					newTree = new StateTree(newGrid, depth + 1);
@@ -405,7 +506,7 @@ public class SudokuGrid {
 		grid.printChangeable();
 		System.out.println("----------------------\n");
 		//grid.solve();
-		grid.solveOptimized1();
+		grid.solveDepth();
 		if(!grid.getSolutions().isEmpty()) { 
 			System.out.println("\n*******SOLUTION(S)*******\n");
 			grid.printSolutions();

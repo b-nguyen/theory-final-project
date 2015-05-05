@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -6,15 +7,21 @@ public class ChangeableIndex {
 	private int x;
 	private int y;
 	private int score;
+	private ArrayList<Integer> numList;
 	
 	public ChangeableIndex(int x, int y) {
 		this.x = x;
 		this.y = y;
 		this.score = 0;
+		this.numList = new ArrayList<Integer>();
 	}
 	
 	public int getX() {
 		return x;
+	}
+	
+	public ArrayList<Integer> getNumList() { 
+		return this.numList;
 	}
 
 	public void setX(int x) {
@@ -41,14 +48,15 @@ public class ChangeableIndex {
 		this.score = 0;
 		Set<Integer> values = new HashSet<Integer>();
 		// Calculate sub-grid scores
-		int start_x = ((int) x / grid.length)*grid.length;
-		int start_y = ((int) y / grid.length)*grid.length;
-		int end_x = (((int) x/grid.length))*grid.length + grid.length - 1;
-		int end_y = (((int) y/grid.length))*grid.length + grid.length - 1;
+		int length = (int) Math.sqrt(grid.length);
+		int start_x = ((int) x / length)*length;
+		int start_y = ((int) y / length)*length;
+		int end_x = (((int) x/length))*length + length - 1;
+		int end_y = (((int) y/length))*length + length - 1;
 		for (int i = start_x; i <= end_x; i++ ) {
 			for (int j = start_y; j <= end_y; j++) {
-				if (grid[x][y] != 0) {
-					values.add(grid[x][y]);
+				if (grid[i][j] != 0) {
+					values.add(grid[i][j]);
 				}
 			}
 		}
@@ -67,6 +75,7 @@ public class ChangeableIndex {
 			}
 		}
 		this.score = values.size();
+		this.numList.addAll(values);
 	}
 
 	@Override
