@@ -99,10 +99,43 @@ public class SudokuGrid {
 				cnt += 1;
 			}
 			String line = s.nextLine();
-			System.out.println("'" + line + "'");
+			//System.out.println("'" + line + "'");
 			String [] lines = line.split("   ");
 			for (String l: lines){
-				System.out.println("'" + l + "'");
+				//System.out.println("'" + l + "'");
+				String [] nums = l.split(" "); 
+				for(String n: nums) { 
+					int num = Integer.parseInt(n);
+					if(num == 0){ 
+						this.changeable.add("" + x + "," + y);
+					}
+					this.add(num);
+				}
+			}
+			cnt += 1;
+		}
+	}
+	
+	public void readInputFile(File inputFile) {
+		//File file = null;
+		Scanner s = null;
+
+		try {
+			s = new Scanner(inputFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		int cnt = 1;
+		for (int i = 0; i < size; i++) { 
+			if(cnt % (this.length + 1) == 0) { 
+				String temp = s.nextLine();
+				cnt += 1;
+			}
+			String line = s.nextLine();
+			//System.out.println("'" + line + "'");
+			String [] lines = line.split("   ");
+			for (String l: lines){
+				//System.out.println("'" + l + "'");
 				String [] nums = l.split(" "); 
 				for(String n: nums) { 
 					int num = Integer.parseInt(n);
@@ -519,5 +552,6 @@ public class SudokuGrid {
 		else{
 			System.out.println("\nNo solution found.");
 		}
+		
 	}
 }
