@@ -46,7 +46,9 @@ public class SolutionsDialogPanel extends JPanel {
    public void createSolutions(SudokuGrid grid, int size) {
 	   this.grid = grid;
 	   this.size = size;
+	   grid.solveDepth();
 	   this.numSolutions = grid.getSolutions().size();
+	   System.out.println(this.numSolutions);
 	   int componentSize = (int) Math.sqrt(size);
 	   
 	   solutionPanel = new JPanel();
@@ -64,15 +66,26 @@ public class SolutionsDialogPanel extends JPanel {
 					subGridPanel.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 					subGridPanel.setLayout(new GridLayout(componentSize, componentSize, 0, 0));
 					gridPanel.add(subGridPanel);
-					for (int k = 0; k < size; k++) {
-						JPanel smallGridPanel = new JPanel();
-						smallGridPanel.setBorder(new LineBorder(new Color(0, 0, 0), 1));
-						smallGridPanel.setLayout(new GridLayout(0, 1, 0, 0));
-						if (grid.getSolutions().get(i).getState()[j][k] != 0) {
-							JLabel label = new JLabel("" + grid.getSolutions().get(i).getState()[j][k], null, JLabel.CENTER);
-							smallGridPanel.add(label);		
+					
+					int cornerCol = (j % 3) * 3;
+					int cornerRow = j;
+					
+					int start_x = ((int) cornerRow/ componentSize)*componentSize;
+					int start_y = ((int) cornerCol / componentSize)*componentSize;
+					int end_x = (((int) cornerRow/componentSize))*componentSize + componentSize - 1;
+					int end_y = (((int) cornerCol/componentSize))*componentSize + componentSize - 1;
+					
+					for (int k = start_x; k <= end_x; k++) {
+						for (int l = start_y; l <= end_y; l++) {
+							JPanel smallGridPanel = new JPanel();
+							smallGridPanel.setBorder(new LineBorder(new Color(0, 0, 0), 1));
+							smallGridPanel.setLayout(new GridLayout(0, 1, 0, 0));
+							if (grid.getSolutions().get(i).getState()[k][l] != 0) {
+								JLabel label = new JLabel("" + grid.getSolutions().get(i).getState()[k][l], null, JLabel.CENTER);
+								smallGridPanel.add(label);		
+							}
+							subGridPanel.add(smallGridPanel);
 						}
-						subGridPanel.add(smallGridPanel);
 					}
 				}
 			   solutionPanel.add(solutionLabel);

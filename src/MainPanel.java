@@ -108,23 +108,31 @@ public class MainPanel extends JPanel {
 			subGridPanel.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 			subGridPanel.setLayout(new GridLayout(componentSize, componentSize, 0, 0));
 			gridPanel.add(subGridPanel);
-			for (int j = 0; j < size; j++) {
-				JPanel smallGridPanel = new JPanel();
-				smallGridPanel.setBorder(new LineBorder(new Color(0, 0, 0), 1));
-				smallGridPanel.setLayout(new GridLayout(0, 1, 0, 0));
-				if (grid.getGrid()[i][j] != 0) {
-					JLabel label = new JLabel("" + grid.getGrid()[i][j], null, JLabel.CENTER);
-					smallGridPanel.add(label);		
+			
+			int cornerCol = (i % 3) * 3;
+			int cornerRow = i;
+			
+			int start_x = ((int) cornerRow/ componentSize)*componentSize;
+			int start_y = ((int) cornerCol / componentSize)*componentSize;
+			int end_x = (((int) cornerRow/componentSize))*componentSize + componentSize - 1;
+			int end_y = (((int) cornerCol/componentSize))*componentSize + componentSize - 1;
+			
+			for (int j = start_x; j <= end_x; j++) {
+				for (int k = start_y; k <= end_y; k++) {
+					JPanel smallGridPanel = new JPanel();
+					smallGridPanel.setBorder(new LineBorder(new Color(0, 0, 0), 1));
+					smallGridPanel.setLayout(new GridLayout(0, 1, 0, 0));
+					if (grid.getGrid()[j][k] != 0) {
+						JLabel label = new JLabel("" + grid.getGrid()[j][k], null, JLabel.CENTER);
+						smallGridPanel.add(label);		
+					}
+					subGridPanel.add(smallGridPanel);
 				}
-				subGridPanel.add(smallGridPanel);
 			}
 		}
 	}
 	
 	public void solvePuzzle() {
-		System.out.println("Solving");
-		grid.solveDepth();
-		System.out.println("Done");
 		solutionsDialogPanel = new SolutionsDialogPanel();
 		solutionsDialogPanel.createSolutions(grid, size);
 		dialog = null;
