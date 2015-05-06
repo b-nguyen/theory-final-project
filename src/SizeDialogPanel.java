@@ -17,7 +17,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-class SizeDialogPanel extends JPanel {
+public class SizeDialogPanel extends JPanel {
    private JTextField textField = new JTextField();
    private JButton submitButton = new JButton("Submit");
    private JLabel instructionLabel = new JLabel("Please Input Size of Grid: Ex. 9 is standard");
@@ -26,10 +26,8 @@ class SizeDialogPanel extends JPanel {
    public SizeDialogPanel() {
 	   
 	  value = 0;
-      setLayout(new FlowLayout());
-
       setBounds(100, 100, 428, 129);
-      //setBorder(new EmptyBorder(5, 5, 5, 5));
+      setBorder(new EmptyBorder(5, 5, 5, 5));
       setLayout(new BorderLayout(0, 0));
       instructionLabel.setHorizontalAlignment(SwingConstants.CENTER);
       
