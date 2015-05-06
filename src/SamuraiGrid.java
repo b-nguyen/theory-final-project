@@ -13,6 +13,7 @@ public class SamuraiGrid {
 	private int length; 
 	private SudokuGrid [] grids; 
 	private ArrayList<ArrayList<StateTree>> solutions;
+	private ArrayList<ArrayList<StateTree>> finalSolutions;
 	
 	
 	public SamuraiGrid() {
@@ -23,7 +24,8 @@ public class SamuraiGrid {
 			this.grids[n] = new SudokuGrid(size);
 		}
 		
-		this.solutions = new ArrayList<ArrayList<StateTree>>(this.grids.length + 1);
+		this.solutions = new ArrayList<ArrayList<StateTree>>(this.grids.length);
+		this.finalSolutions = new ArrayList<ArrayList<StateTree>>();
 		for(int i = 0; i <= this.grids.length; i++){  
 			this.solutions.add(new ArrayList<StateTree>());
 		}
@@ -126,27 +128,6 @@ public class SamuraiGrid {
 		}
 	}
 	
-	public void print() { 
-		for(int i = 0; i < this.grids.length; i++) {
-			if(i == 0) { 
-				System.out.println("Left-top grid: \n"); 
-			}
-			else if(i == 1) { 
-				System.out.println("Right-top grid: \n");
-			}
-			else if(i == 2) { 
-				System.out.println("Middle Grid: \n"); 
-			}
-			else if(i == 3) { 
-				System.out.println("Left-bottom grid: \n");
-			}
-			else if(i == 4) { 
-				System.out.println("Right-bottom grid: \n"); 
-			}
-			this.grids[i].printGrid();
-		}
-	}
-	
 	public void printChangeables() { 
 		for(int i = 0; i < this.grids.length; i++) {
 			if(i == 0) { 
@@ -190,48 +171,101 @@ public class SamuraiGrid {
 			for(int j = 0; j < this.solutions.get(2).size(); j++) { 
 				if(this.matchTopLeft(this.solutions.get(0).get(i).getState(), this.solutions.get(2).get(j).getState())) { 
 					/*this.solutions.get(0).get(i).printStateTree(); 
+					System.out.println("--------------------------------");
 					this.solutions.get(2).get(j).printStateTree();*/
-					this.solutions.get(5).add(this.solutions.get(2).get(j));
+					ArrayList<StateTree> t = new ArrayList<StateTree>(5);
+					t.add(this.solutions.get(0).get(i));
+					t.add(this.solutions.get(2).get(j));
+					this.finalSolutions.add(t);
 				}
 			}
 		}
-		for(int i = 0; i < this.solutions.get(5).size(); i++){
+//		ArrayList<Integer> toRemove = new ArrayList<Integer>();
+		for(int i = 0; i < this.finalSolutions.size(); i++){
 			boolean found = false; 
 			for(int j = 0; j < this.solutions.get(1).size(); j++) { 
-				if(this.matchTopRight(this.solutions.get(1).get(j).getState(), this.solutions.get(5).get(i).getState())) {
-					//this.solutions.get(5).get(i).printStateTree(); 
-					//this.solutions.get(1).get(j).printStateTree();
+				if(this.matchTopRight(this.solutions.get(1).get(j).getState(), this.finalSolutions.get(i).get(1).getState())) {
+					/*this.solutions.get(5).get(i).printStateTree(); 
+					System.out.println("--------------------------------");
+					this.solutions.get(1).get(j).printStateTree();*/
+					this.finalSolutions.get(i).add(this.solutions.get(1).get(j));
 					found = true; 
+					//temp.add(this.solutions.get(5).get(i);
 				}
 			}
-			if(!found) 
-				this.solutions.get(5).remove(i);
+			if(!found) {
+				this.finalSolutions.remove(i); 
+				i--;
+			}
+				
+//				toRemove.add(i);
 		}
-		for(int i = 0; i < this.solutions.get(5).size(); i++){
+//		for(Integer i: toRemove) { 
+//			this.finalSolutions.remove(i);
+//		}
+//		toRemove.clear();
+		/*
+		this.solutions.get(5).clear();
+		this.solutions.get(5).addAll(temp);
+		temp.clear();
+		System.out.println(this.solutions.get(5).size() + " " + cnt);*/
+		for(int i = 0; i < this.finalSolutions.size(); i++){
 			boolean found = false; 
 			for(int j = 0; j < this.solutions.get(3).size(); j++) { 
-				if(this.matchTopRight(this.solutions.get(5).get(i).getState(), this.solutions.get(3).get(j).getState())) { 
-					//this.solutions.get(5).get(i).printStateTree(); 
-					//this.solutions.get(3).get(j).printStateTree();
+				if(this.matchTopRight(this.finalSolutions.get(i).get(1).getState(), this.solutions.get(3).get(j).getState())) { 
+					/*System.out.println("Center: \n");
+					this.solutions.get(5).get(i).printStateTree();
+					System.out.println("Bottom Left: \n");
+					this.solutions.get(3).get(j).printStateTree();*/
 					found = true; 
+					this.finalSolutions.get(i).add(this.solutions.get(3).get(j));
+					//temp.add(this.solutions.get(5).get(i));
 				}
 			}
-			if(!found) 
-				this.solutions.get(5).remove(i);
+			if(!found) {
+				this.finalSolutions.remove(i); 
+				i--;
+			}
 		}
-		for(int i = 0; i < this.solutions.get(5).size(); i++){
+//		for(Integer i: toRemove) { 
+//			this.finalSolutions.remove(i);
+//		}
+//		toRemove.clear();
+		/*this.solutions.get(5).clear();
+		this.solutions.get(5).addAll(temp);
+		temp.clear();*/
+		//System.out.println(this.finalSolutions.size());
+		int cnt = 0; 
+		int rmv = 0;
+		for(int i = 0; i < this.finalSolutions.size(); i++){
 			boolean found = false; 
 			for(int j = 0; j < this.solutions.get(4).size(); j++) { 
-				if(this.matchTopLeft(this.solutions.get(5).get(i).getState(), this.solutions.get(4).get(j).getState())) { 
-					//this.solutions.get(5).get(i).printStateTree(); 
-					//this.solutions.get(4).get(j).printStateTree();
+				if(this.matchTopLeft(this.finalSolutions.get(i).get(1).getState(), this.solutions.get(4).get(j).getState())) { 
+					/*System.out.println("Center: \n");
+					this.solutions.get(5).get(i).printStateTree();
+					System.out.println("Bottom Left: \n");
+					this.solutions.get(4).get(j).printStateTree();*/
 					found = true; 
+					cnt++;
+					this.finalSolutions.get(i).add(this.solutions.get(4).get(j));
+					//temp.add(this.solutions.get(5).get(i));
+					//toRemove.add(i);
 				}
 			}
-			if(!found)
-				this.solutions.get(5).remove(i);
+			if(!found) {
+				this.finalSolutions.remove(i); 
+				i--;
+			}
 		}
-		System.out.println(this.solutions.get(5).size());
+//		for(Integer i: toRemove) { 
+//			this.finalSolutions.remove(i);
+//			rmv++;
+//		}
+//		toRemove.clear();
+		/*this.solutions.get(5).clear();
+		this.solutions.get(5).addAll(temp);
+		temp.clear();*/
+		//System.out.println(this.finalSolutions.size() + " " + cnt + " " + rmv);
 		return false;
 	}
 	
@@ -268,6 +302,205 @@ public class SamuraiGrid {
 		return true;
 	}
 	
+	public ArrayList<ArrayList<StateTree>> getSolutions() {
+		return this.finalSolutions;
+	}
+	
+	private void printSamurai(int [][] topLeft, int [][] topRight, int [][] middle, int [][] bottomLeft, int [][] bottomRight) { 
+		String line = ""; 
+		for(int i = 0; i < 6; i++) { 
+			for(int j = 0; j < topLeft[i].length; j++) { 
+				if(j == 0) { 
+					line += topLeft[i][j];
+				}
+				else if(j % 3 == 0) { 
+					line += "   " + topLeft[i][j];
+				}
+				else { 
+					line += " " + topLeft[i][j];
+				}
+			}
+			line += "           "; 
+			for(int j = 0; j < topRight[i].length; j++) { 
+				if(j == 0) { 
+					line += topRight[i][j];
+				}
+				else if(j % 3 == 0) { 
+					line += "   " + topRight[i][j];
+				}
+				else { 
+					line += " " + topRight[i][j];
+				}
+			}
+			if(i % 3 == 0  && i != 0) {
+				System.out.println();
+			}
+			System.out.println(line); 
+			line = "";
+		}
+		for(int i = 6; i < 9; i++) { 
+			for(int j = 0; j < topLeft[i].length; j++) { 
+				if(j == 0) { 
+					line += topLeft[i][j];
+				}
+				else if(j % 3 == 0) { 
+					line += "   " + topLeft[i][j];
+				}
+				else { 
+					line += " " + topLeft[i][j];
+				}
+			}
+			for(int j = 3; j < 6; j++){
+				if(j == 0) { 
+					line += middle[i - 6][j];
+				}
+				else if(j % 3 == 0) { 
+					line += "   " + middle[i - 6][j];
+				}
+				else { 
+					line += " " + middle[i - 6][j];
+				}
+			}
+			line += "   ";
+			for(int j = 0; j < topRight[i].length; j++) { 
+				if(j == 0) { 
+					line += topRight[i][j];
+				}
+				else if(j % 3 == 0) { 
+					line += "   " + topRight[i][j];
+				}
+				else { 
+					line += " " + topRight[i][j];
+				}
+			}
+			if(i % 3 == 0  && i != 0) {
+				System.out.println();
+			}
+			System.out.println(line); 
+			line = "";
+		}
+		for(int i = 3; i < 6; i++) { 
+			line += "                ";
+			for(int j = 0; j < middle[i].length; j++){
+				if(j == 0) { 
+					line += middle[i][j];
+				}
+				else if(j % 3 == 0) { 
+					line += "   " + middle[i][j];
+				}
+				else { 
+					line += " " + middle[i][j];
+				}
+			}
+			if(i % 3 == 0  && i != 0) {
+				System.out.println();
+			}
+			line += "                ";
+			System.out.println(line); 
+			line = "";
+		}
+		for(int i = 0; i < 3; i++) { 
+			for(int j = 0; j < bottomLeft[i].length; j++) { 
+				if(j == 0) { 
+					line += bottomLeft[i][j];
+				}
+				else if(j % 3 == 0) { 
+					line += "   " + bottomLeft[i][j];
+				}
+				else { 
+					line += " " + bottomLeft[i][j];
+				}
+			}
+			for(int j = 3; j < 6; j++){
+				if(j == 0) { 
+					line += middle[i + 6][j];
+				}
+				else if(j % 3 == 0) { 
+					line += "   " + middle[i + 6][j];
+				}
+				else { 
+					line += " " + middle[i + 6][j];
+				}
+			}
+			line += "   ";
+			for(int j = 0; j < bottomRight[i].length; j++) { 
+				if(j == 0) { 
+					line += bottomRight[i][j];
+				}
+				else if(j % 3 == 0) { 
+					line += "   " + bottomRight[i][j];
+				}
+				else { 
+					line += " " + bottomRight[i][j];
+				}
+			}
+			if(i % 3 == 0) {
+				System.out.println();
+			}
+			System.out.println(line); 
+			line = "";
+		}
+		for(int i = 3; i < 9; i++) { 
+			for(int j = 0; j < bottomLeft[i].length; j++) { 
+				if(j == 0) { 
+					line += bottomLeft[i][j];
+				}
+				else if(j % 3 == 0) { 
+					line += "   " + bottomLeft[i][j];
+				}
+				else { 
+					line += " " + bottomLeft[i][j];
+				}
+			}
+			line += "           "; 
+			for(int j = 0; j < bottomRight[i].length; j++) { 
+				if(j == 0) { 
+					line += bottomRight[i][j];
+				}
+				else if(j % 3 == 0) { 
+					line += "   " + bottomRight[i][j];
+				}
+				else { 
+					line += " " + bottomRight[i][j];
+				}
+			}
+			if(i % 3 == 0  && i != 0) {
+				System.out.println();
+			}
+			System.out.println(line); 
+			line = "";
+		}
+	}
+	
+	public void printSolutions() { 
+		for(ArrayList<StateTree> l: this.finalSolutions) { 
+			//System.out.println(l.size());
+			this.printSamurai(l.get(0).getState(), l.get(2).getState(), l.get(1).getState(), l.get(3).getState(), l.get(4).getState());
+		}
+	}
+	
+	public void print() { 
+		/*for(int i = 0; i < this.grids.length; i++) {
+			if(i == 0) { 
+				System.out.println("Left-top grid: \n"); 
+			}
+			else if(i == 1) { 
+				System.out.println("Right-top grid: \n");
+			}
+			else if(i == 2) { 
+				System.out.println("Middle Grid: \n"); 
+			}
+			else if(i == 3) { 
+				System.out.println("Left-bottom grid: \n");
+			}
+			else if(i == 4) { 
+				System.out.println("Right-bottom grid: \n"); 
+			}
+			this.grids[i].printGrid();
+		}*/
+		this.printSamurai(this.grids[0].getGrid(), this.grids[1].getGrid(), this.grids[2].getGrid(), this.grids[3].getGrid(), this.grids[4].getGrid());
+	}
+	
 	public static void main(String args[]) {
 		SamuraiGrid grid = new SamuraiGrid();
 		grid.readInput();
@@ -275,14 +508,13 @@ public class SamuraiGrid {
 		grid.printChangeables();
 		System.out.println("----------------------\n");
 		grid.solve();
-		/*grid.solveDepth();
 		if(!grid.getSolutions().isEmpty()) { 
 			System.out.println("\n*******SOLUTION(S)*******\n");
 			grid.printSolutions();
 		}
 		else{
 			System.out.println("\nNo solution found.");
-		}*/
+		}
 	}
 }
 
