@@ -134,7 +134,7 @@ public class MainPanel extends JPanel {
 		
 		System.out.println("We got a size: " + 9);
 		size = sizeDialogPanel.getValue();
-		SudokuGrid.generate(size);
+		//SudokuGrid.generate(size);
 		inputFile = new File("generated.txt");
 		System.out.println(inputFile.getAbsolutePath());
 		System.out.println(inputFile.getName());

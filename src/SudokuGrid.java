@@ -13,6 +13,9 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class SudokuGrid {
+	public static final double HARD = .3; 
+	public static final double MEDIUM = .45; 
+	public static final double EASY = .6;
 	private int size;
 	private int length; 
 	private int[][] grid;
@@ -532,15 +535,18 @@ public class SudokuGrid {
 	}
 	
 	//Generate solvable sudoku puzzle
-	public static int [][] generate(int size) { 
+	public static int [][] generate(int size, double difficulty) { 
 		int length = (int) Math.sqrt(size);
 		int [][] puzzle = new int [size][size];
 		ArrayList<String> changes = new ArrayList<String>();
 		int x = 0; 
 		int y = 0;
 		
-		String filename = ""; 
-		if(size == 9) { 
+		String filename = "";
+		if(size == 4) { 
+			filename = "4x4s.txt";
+		}
+		else if(size == 9) { 
 			filename = "9x9gridS.txt";
 		}
 		else if(size == 16) { 
@@ -585,25 +591,25 @@ public class SudokuGrid {
 			y = 0;
 		}
 		
-		puzzle = SudokuGrid.reduce(puzzle, 0, changes);
+		puzzle = SudokuGrid.reduce(puzzle, 0, changes, difficulty);
 		PrintWriter writer;
 		try {
 			writer = new PrintWriter("generated.txt", "UTF-8"); 
 			for(int i = 0; i < puzzle.length; i++) { 
 				String line = ""; 
 				for (int j = 0; j < puzzle[i].length; j++) {
-					if(j != 8) { 
+					if(j != size - 1) { 
 						line += puzzle[i][j] + " ";
 					}
 					else {
 						line += puzzle[i][j];
 					}
-					if ((j + 1) % 3 == 0 && j != 8) {
+					if ((j + 1) % length == 0 && j != size - 1) {
 						line += "  ";
 					}
 				}
 				writer.println(line);
-				if ((i + 1) % 3 == 0 && i != 8) {
+				if ((i + 1) % length == 0 && i != size - 1) {
 					writer.println("");
 				}
 			}
@@ -615,7 +621,7 @@ public class SudokuGrid {
 		return puzzle;
 	}
 	
-	private static int [][] reduce(int [][] puzzle, int n, ArrayList<String> changes) {
+	private static int [][] reduce(int [][] puzzle, int n, ArrayList<String> changes, double difficulty) {
 		Random rm = new Random();
 		int index = rm.nextInt(changes.size());
 		String [] numbers = changes.get(index).split(",");
@@ -627,7 +633,7 @@ public class SudokuGrid {
 		int num = puzzle[x][y];
 		puzzle[x][y] = 0;
 		//check if still solvable
-		SudokuGrid grid = new SudokuGrid(puzzle.length); 
+		SudokuGrid grid = new SudokuGrid(puzzle.length);
 		for(int i = 0; i < puzzle.length; i++) {
 			for(int j = 0; j < puzzle[i].length; j++) { 
 				if(puzzle[i][j] == 0) 
@@ -635,18 +641,19 @@ public class SudokuGrid {
 				grid.add(puzzle[i][j]);
 			}
 		}
-		//System.out.println(changes.size() + "/" + .3*(grid.size*grid.size));
+
+		//System.out.println(changes.size() + "/" + difficulty*(grid.size*grid.size));
 		n++;
 		//grid.printGrid();
 		grid.solveDepth();
 		if(grid.getSolutions().size() == 1) { 
 			//grid.printSolutions();
-			return reduce(puzzle, n, changes);
+			return reduce(puzzle, n, changes, difficulty);
 		}
 		else { 
-			if(changes.size() > .3*(grid.size*grid.size)) { 
+			if(changes.size() > difficulty*(grid.size*grid.size)) { 
 				puzzle[x][y] = num;
-				return reduce(puzzle, n, changes);
+				return reduce(puzzle, n, changes, difficulty);
 			}
 			else { 
 				puzzle[x][y] = num;
@@ -681,8 +688,51 @@ public class SudokuGrid {
 //		else{
 //			System.out.println("\nNo solution found.");
 //		}
-		int [][] grid = SudokuGrid.generate(9);
-		for (int i = 0; i < grid.length; i++) {
+
+		Scanner kb = new Scanner(System.in); 
+		System.out.println("Enter the size of the nxn sudoku puzzle you want to generate: ");
+		//System.out.println("Enter the size of the nxn sudoku puzzle you want to solve: "); 
+		int size = 0; 
+		try { 
+			size = kb.nextInt(); 
+		}
+		catch(InputMismatchException e) {
+			System.out.println("Please enter a valid size.");
+			System.exit(-1);
+		}
+		System.out.println("Enter the desired difficulty of the puzzle ('e', 'm', or 'h'): ");
+		kb.nextLine();
+		String difficulty = kb.nextLine();
+		if(difficulty.equals("e")) { 
+			SudokuGrid.generate(size, SudokuGrid.EASY);
+		}
+		else if (difficulty.equals("m")) { 
+			SudokuGrid.generate(size, SudokuGrid.MEDIUM);
+		}
+		else if (difficulty.equals("h")) { 
+			SudokuGrid.generate(size, SudokuGrid.HARD);
+		}
+		else { 
+			System.out.println("Invalid difficulty.");
+			System.exit(-1);
+		}
+		/*
+		SudokuGrid grid = new SudokuGrid(size);
+		grid.readInput();
+		grid.printGrid();
+		grid.printChangeable();
+		System.out.println("----------------------\n");
+		//grid.solve();
+		grid.solveDepth();
+		if(!grid.getSolutions().isEmpty()) { 
+			System.out.println("\n*******SOLUTION(S)*******\n");
+			grid.printSolutions();
+			System.out.println("There are " + grid.getSolutions().size() + " solutions to the puzzle.");
+		}
+		else{
+			System.out.println("\nNo solution found.");
+		} */
+		/*for (int i = 0; i < grid.length; i++) {
 			for (int j = 0; j < grid[i].length; j++) {
 				System.out.print(grid[i][j] + " ");
 				if ((j + 1) % 3 == 0) {
@@ -693,6 +743,6 @@ public class SudokuGrid {
 			if ((i + 1) % 3 == 0) {
 				System.out.println();
 			}
-		}
+		}*/
 	}
 }
