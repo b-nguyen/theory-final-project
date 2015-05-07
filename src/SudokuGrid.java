@@ -635,7 +635,7 @@ public class SudokuGrid {
 				grid.add(puzzle[i][j]);
 			}
 		}
-		System.out.println(changes.size() + "/" + .3*(grid.size*grid.size));
+		//System.out.println(changes.size() + "/" + .3*(grid.size*grid.size));
 		n++;
 		//grid.printGrid();
 		grid.solveDepth();
@@ -681,7 +681,7 @@ public class SudokuGrid {
 //		else{
 //			System.out.println("\nNo solution found.");
 //		}
-		int [][] grid = SudokuGrid.generate(16);
+		int [][] grid = SudokuGrid.generate(9);
 		for (int i = 0; i < grid.length; i++) {
 			for (int j = 0; j < grid[i].length; j++) {
 				System.out.print(grid[i][j] + " ");

@@ -104,10 +104,49 @@ public class MainPanel extends JPanel {
 				samurai = true;
 			}
 		});
+		
+		createNewInputButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				createInput();
+			}
+		});
 	}
 
-	private void readFromUserNormal() {
-		// lazy creation of the JDialog
+	public void createInput() {
+		sizeDialogPanel = new SizeDialogPanel();
+		dialog = null;
+		fileDialogPanel = null;
+
+		if (dialog == null) {
+			Window win = SwingUtilities.getWindowAncestor(this);
+			if (win != null) {
+				dialog = new JDialog(win, "Size dialog",
+						ModalityType.APPLICATION_MODAL);
+				dialog.getContentPane().add(sizeDialogPanel);
+				dialog.pack();
+				dialog.setLocationRelativeTo(null);
+			}
+		}
+		dialog.setVisible(true); // here the modal dialog takes over
+		
+		
+		
+		System.out.println("We got a size: " + 9);
+		size = sizeDialogPanel.getValue();
+		SudokuGrid.generate(size);
+		inputFile = new File("generated.txt");
+		System.out.println(inputFile.getAbsolutePath());
+		System.out.println(inputFile.getName());
+		createGridNormal(size, inputFile);
+		
+		solveButton.setEnabled(true);
+		setVisible(false);
+		setVisible(true);
+	}
+	
+	public void readFromUserNormal() {
+
 		sizeDialogPanel = new SizeDialogPanel();
 		dialog = null;
 		fileDialogPanel = null;
