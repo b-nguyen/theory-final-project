@@ -525,9 +525,84 @@ public class SudokuGrid {
 		}
 		this.solutions.addAll(answers); 
 	}
+	
+	//Generate solvable sudoku puzzle
+	public static int [][] generate(int size) { 
+		int length = (int) Math.sqrt(size);
+		int [][] puzzle = new int [size][size];
+		int x = 0; 
+		int y = 0;
+		
+		String filename = ""; 
+		if(size == 9) { 
+			filename = "9x9gridS.txt";
+		}
+		File file = null;
+		Scanner s = null;
+				
+		file = new File(filename);
+		try {
+			s = new Scanner(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		int cnt = 1;
+		for (int i = 0; i < size; i++) { 
+			if(cnt % (length + 1) == 0) { 
+				String temp = s.nextLine();
+				cnt += 1;
+			}
+			String line = s.nextLine();
+			//System.out.println("'" + line + "'");
+			String [] lines = line.split("   ");
+			for (String l: lines){
+				//System.out.println("'" + l + "'");
+				String [] nums = l.split(" "); 
+				for(String n: nums) { 
+					puzzle[x][y] = Integer.parseInt(n);
+					y++;
+				}
+			}
+			cnt++;
+			x++;
+			y = 0;
+		}
+		
+		return SudokuGrid.reduce(puzzle, 0);
+	}
+	
+	private static int [][] reduce(int [][] puzzle, int n) {
+		Random rm = new Random();
+		int x = rm.nextInt(puzzle.length);
+		int y = rm.nextInt(puzzle.length);
+		
+		//remove number
+		int num = puzzle[x][y];
+		puzzle[x][y] = 0;
+		
+		//check if still solvable
+		SudokuGrid grid = new SudokuGrid(puzzle.length); 
+		for(int i = 0; i < puzzle.length; i++) {
+			for(int j = 0; j < puzzle[i].length; j++) { 
+				grid.add(puzzle[i][j]);
+			}
+		}
+		System.out.println(n);
+		n++;
+		grid.printGrid();
+		grid.solveDepth();
+		if(grid.getSolutions().size() == 1) { 
+			grid.printSolutions();
+			return reduce(puzzle, n);
+		}
+		else { 
+			 puzzle[x][y] = num;
+			 return puzzle;
+		}
+	}
 		
 	public static void main(String args[]) {
-		Scanner kb = new Scanner(System.in); 
+		/*Scanner kb = new Scanner(System.in); 
 		System.out.println("Enter the size of the nxn sudoku puzzle you want to solve: "); 
 		int size = 0; 
 		try { 
@@ -551,7 +626,19 @@ public class SudokuGrid {
 		}
 		else{
 			System.out.println("\nNo solution found.");
+		}*/
+		int [][] grid = SudokuGrid.generate(9);
+		for (int i = 0; i < grid.length; i++) {
+			for (int j = 0; j < grid[i].length; j++) {
+				System.out.print(grid[i][j] + " ");
+				if ((j + 1) % 3 == 0) {
+					System.out.print("  ");
+				}
+			}
+			System.out.println();
+			if ((i + 1) % 3 == 0) {
+				System.out.println();
+			}
 		}
-		
 	}
 }
