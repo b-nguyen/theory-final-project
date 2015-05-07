@@ -26,11 +26,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.RowSpec;
-
 import javax.swing.BoxLayout;
 
 import java.awt.GridBagLayout;
