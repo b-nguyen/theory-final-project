@@ -66,12 +66,8 @@ public class SudokuGui2 {
 		frame.setBounds(100, 100, 750, 750);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		//JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		
-
 		MainPanel mainPanel = new MainPanel();
 		frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
-		//tabbedPane.addTab("Start", null, mainPanel, null);
 
 	}
 

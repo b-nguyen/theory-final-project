@@ -69,7 +69,7 @@ public class SolutionsDialogPanel extends JPanel {
 					subGridPanel.setLayout(new GridLayout(componentSize, componentSize, 0, 0));
 					gridPanel.add(subGridPanel);
 					
-					int cornerCol = (j % 3) * 3;
+					int cornerCol = (j % componentSize) * componentSize;
 					int cornerRow = j;
 					
 					int start_x = ((int) cornerRow/ componentSize)*componentSize;
