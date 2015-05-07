@@ -641,7 +641,8 @@ public class SudokuGrid {
 				grid.add(puzzle[i][j]);
 			}
 		}
-		System.out.println(changes.size() + "/" + difficulty*(grid.size*grid.size));
+
+		//System.out.println(changes.size() + "/" + difficulty*(grid.size*grid.size));
 		n++;
 		//grid.printGrid();
 		grid.solveDepth();
@@ -662,9 +663,35 @@ public class SudokuGrid {
 	}
 		
 	public static void main(String args[]) {
+//		Scanner kb = new Scanner(System.in); 
+//		System.out.println("Enter the size of the nxn sudoku puzzle you want to solve: "); 
+//		int size = 0; 
+//		try { 
+//			size = kb.nextInt(); 
+//		}
+//		catch(InputMismatchException e) {
+//			System.out.println("Please enter a valid size.");
+//			System.exit(-1);
+//		}
+//		SudokuGrid grid = new SudokuGrid(size);
+//		grid.readInput();
+//		grid.printGrid();
+//		grid.printChangeable();
+//		System.out.println("----------------------\n");
+//		//grid.solve();
+//		grid.solveDepth();
+//		if(!grid.getSolutions().isEmpty()) { 
+//			System.out.println("\n*******SOLUTION(S)*******\n");
+//			grid.printSolutions();
+//			System.out.println("There are " + grid.getSolutions().size() + " solutions to the puzzle.");
+//		}
+//		else{
+//			System.out.println("\nNo solution found.");
+//		}
+
 		Scanner kb = new Scanner(System.in); 
-		//System.out.println("Enter the size of the nxn sudoku puzzle you want to generate: ");
-		System.out.println("Enter the size of the nxn sudoku puzzle you want to solve: "); 
+		System.out.println("Enter the size of the nxn sudoku puzzle you want to generate: ");
+		//System.out.println("Enter the size of the nxn sudoku puzzle you want to solve: "); 
 		int size = 0; 
 		try { 
 			size = kb.nextInt(); 
@@ -673,22 +700,23 @@ public class SudokuGrid {
 			System.out.println("Please enter a valid size.");
 			System.exit(-1);
 		}
-//		System.out.println("Enter the desired difficulty of the puzzle ('e', 'm', or 'h'): ");
-//		kb.nextLine();
-//		String difficulty = kb.nextLine();
-//		if(difficulty.equals("e")) { 
-//			SudokuGrid.generate(size, SudokuGrid.EASY);
-//		}
-//		else if (difficulty.equals("m")) { 
-//			SudokuGrid.generate(size, SudokuGrid.MEDIUM);
-//		}
-//		else if (difficulty.equals("h")) { 
-//			SudokuGrid.generate(size, SudokuGrid.HARD);
-//		}
-//		else { 
-//			System.out.println("Invalid difficulty.");
-//			System.exit(-1);
-//		}
+		System.out.println("Enter the desired difficulty of the puzzle ('e', 'm', or 'h'): ");
+		kb.nextLine();
+		String difficulty = kb.nextLine();
+		if(difficulty.equals("e")) { 
+			SudokuGrid.generate(size, SudokuGrid.EASY);
+		}
+		else if (difficulty.equals("m")) { 
+			SudokuGrid.generate(size, SudokuGrid.MEDIUM);
+		}
+		else if (difficulty.equals("h")) { 
+			SudokuGrid.generate(size, SudokuGrid.HARD);
+		}
+		else { 
+			System.out.println("Invalid difficulty.");
+			System.exit(-1);
+		}
+		/*
 		SudokuGrid grid = new SudokuGrid(size);
 		grid.readInput();
 		grid.printGrid();
@@ -703,7 +731,7 @@ public class SudokuGrid {
 		}
 		else{
 			System.out.println("\nNo solution found.");
-		}
+		} */
 		/*for (int i = 0; i < grid.length; i++) {
 			for (int j = 0; j < grid[i].length; j++) {
 				System.out.print(grid[i][j] + " ");
