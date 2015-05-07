@@ -126,6 +126,104 @@ public class SamuraiGrid {
 		}
 	}
 	
+	public void readInputFile(File inputFile) {
+		Scanner s = null;
+		try {
+			s = new Scanner(inputFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		int cnt = 0;
+		while(s.hasNextLine()) { 
+			cnt++;
+			String line = s.nextLine();
+			if("".equals(line)) 
+				continue; 
+			String [] lines = line.trim().split("\\s{3,}");
+			//System.out.println(lines.length);
+			for(int i = 0; i < lines.length; i++){ 
+				String [] nums = lines[i].split(" "); 
+				for(String n: nums) { 
+					if(cnt < 8) { 
+						if(i < 3) { 
+							if("0".equals(n)) 
+								this.grids[0].addChangeable(); 
+							this.grids[0].add(Integer.parseInt(n));
+							//System.out.println(n); 
+						}
+						else { 
+							if("0".equals(n)) 
+								this.grids[1].addChangeable(); 
+							this.grids[1].add(Integer.parseInt(n));
+						}
+					}
+					else if(cnt < 12) { 
+						if(i <= 2) { 
+							if("0".equals(n)) 
+								this.grids[0].addChangeable(); 
+							this.grids[0].add(Integer.parseInt(n));
+						}
+						if(i >= 2 && i <= 4) { 
+							if("0".equals(n)) 
+								this.grids[2].addChangeable(); 
+							this.grids[2].add(Integer.parseInt(n));
+							//System.out.println(n);
+						}
+						if(i >= 4) { 
+							if("0".equals(n)) 
+								this.grids[1].addChangeable(); 
+							this.grids[1].add(Integer.parseInt(n));
+						}
+					}
+					else if(cnt < 16) {
+						if("0".equals(n)) 
+							this.grids[2].addChangeable(); 
+						this.grids[2].add(Integer.parseInt(n));
+					}
+					else if(cnt < 20) { 
+						if(i <= 2) { 
+							if("0".equals(n)) 
+								this.grids[3].addChangeable(); 
+							this.grids[3].add(Integer.parseInt(n));
+						}
+						if(i >= 2 && i <= 4) { 
+							if("0".equals(n)) 
+								this.grids[2].addChangeable(); 
+							this.grids[2].add(Integer.parseInt(n));
+							//System.out.println(n);
+						}
+						if(i >= 4) { 
+							if("0".equals(n)) 
+								this.grids[4].addChangeable(); 
+							this.grids[4].add(Integer.parseInt(n));
+						}
+					}	
+					else { 
+						if(i < 3) { 
+							if("0".equals(n)) 
+								this.grids[3].addChangeable(); 
+							this.grids[3].add(Integer.parseInt(n));
+							//System.out.println(n); 
+						}
+						else { 
+							if("0".equals(n)) 
+								this.grids[4].addChangeable(); 
+							this.grids[4].add(Integer.parseInt(n));
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	public SudokuGrid[] getGrids() {
+		return grids;
+	}
+
+	public ArrayList<ArrayList<StateTree>> getSolutions() {
+		return solutions;
+	}
+
 	public void print() { 
 		for(int i = 0; i < this.grids.length; i++) {
 			if(i == 0) { 
