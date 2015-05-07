@@ -182,7 +182,7 @@ public class MainPanel extends JPanel {
 
 	public void solveNormalPuzzle() {
 		solutionsDialogPanel = new SolutionsDialogPanel();
-		solutionsDialogPanel.createSolutions(grid, size);
+		solutionsDialogPanel.createNormalSolutions(grid, size);
 		dialog = null;
 
 		if (dialog == null) {
@@ -199,7 +199,22 @@ public class MainPanel extends JPanel {
 	}
 	
 	public void solveSamuraiPuzzle() {
-		
+		System.out.println("Solving samurai");
+		solutionsDialogPanel = new SolutionsDialogPanel();
+		solutionsDialogPanel.createSamuraiSolutions(samGrid);
+		dialog = null;
+
+		if (dialog == null) {
+			Window win = SwingUtilities.getWindowAncestor(this);
+			if (win != null) {
+				dialog = new JDialog(win, "Solutions",
+						ModalityType.APPLICATION_MODAL);
+				dialog.getContentPane().add(solutionsDialogPanel);
+				dialog.pack();
+				dialog.setLocationRelativeTo(null);
+			}
+		}
+		dialog.setVisible(true); // here the modal dialog takes over
 	}
 
 	public void readFromUserSamurai() {
@@ -230,9 +245,7 @@ public class MainPanel extends JPanel {
 			subGridPanel.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 			subGridPanel.setLayout(new GridLayout(3, 3, 0, 0));
 			gridPanel.add(subGridPanel);
-
-			// for (int j = 0; j < 9; j++) {
-
+			
 			// Do not put in borders if it is suppose to be empty
 			if (i != 3 && i != 10 && i != 21 && i != 22 && i != 26 && i != 27
 					&& i != 38 && i != 45) {
