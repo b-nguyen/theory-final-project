@@ -542,8 +542,11 @@ public class SudokuGrid {
 		int x = 0; 
 		int y = 0;
 		
-		String filename = ""; 
-		if(size == 9) { 
+		String filename = "";
+		if(size == 4) { 
+			filename = "4x4s.txt";
+		}
+		else if(size == 9) { 
 			filename = "9x9gridS.txt";
 		}
 		else if(size == 16) { 
