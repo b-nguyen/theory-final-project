@@ -25,6 +25,7 @@ import javax.swing.border.LineBorder;
 
 public class MainPanel extends JPanel {
 	private int size;
+	private double difficulty;
 	private File inputFile;
 	private SudokuGrid grid = null;
 	private SamuraiGrid samGrid = null;
@@ -43,6 +44,7 @@ public class MainPanel extends JPanel {
 	private SizeDialogPanel sizeDialogPanel = new SizeDialogPanel();
 	private FileDialogPanel fileDialogPanel;
 	private SolutionsDialogPanel solutionsDialogPanel = new SolutionsDialogPanel();
+	private DifficultyDialogPanel difficultyDialogPanel = new DifficultyDialogPanel();
 	private JDialog dialog;
 	private JPanel gridPanel = new JPanel();
 
@@ -114,6 +116,7 @@ public class MainPanel extends JPanel {
 	}
 
 	public void createInput() {
+		// Get Size
 		sizeDialogPanel = new SizeDialogPanel();
 		dialog = null;
 		fileDialogPanel = null;
@@ -129,15 +132,33 @@ public class MainPanel extends JPanel {
 			}
 		}
 		dialog.setVisible(true); // here the modal dialog takes over
-		
-		
-		
-		System.out.println("We got a size: " + 9);
 		size = sizeDialogPanel.getValue();
-		//SudokuGrid.generate(size);
+		
+		// Get difficulty
+		difficultyDialogPanel = new DifficultyDialogPanel();
+		dialog = null;
+		fileDialogPanel = null;
+
+		if (dialog == null) {
+			Window win = SwingUtilities.getWindowAncestor(this);
+			if (win != null) {
+				dialog = new JDialog(win, "Difficulty dialog",
+						ModalityType.APPLICATION_MODAL);
+				dialog.getContentPane().add(difficultyDialogPanel);
+				dialog.pack();
+				dialog.setLocationRelativeTo(null);
+			}
+		}
+		dialog.setVisible(true); // here the modal dialog takes over
+		difficulty = difficultyDialogPanel.getDfficulty();
+		
+		
+		//System.out.println("We got a size: " + 9);
+
+		SudokuGrid.generate(size, difficulty);
 		inputFile = new File("generated.txt");
-		System.out.println(inputFile.getAbsolutePath());
-		System.out.println(inputFile.getName());
+		//System.out.println(inputFile.getAbsolutePath());
+		//System.out.println(inputFile.getName());
 		createGridNormal(size, inputFile);
 		
 		solveButton.setEnabled(true);
