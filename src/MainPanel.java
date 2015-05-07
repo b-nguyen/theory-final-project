@@ -153,7 +153,7 @@ public class MainPanel extends JPanel {
 					0, 0));
 			gridPanel.add(subGridPanel);
 
-			int cornerCol = (i % 3) * 3;
+			int cornerCol = (i % componentSize) * componentSize;
 			int cornerRow = i;
 
 			int start_x = ((int) cornerRow / componentSize) * componentSize;
