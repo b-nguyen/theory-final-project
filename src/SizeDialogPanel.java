@@ -57,7 +57,6 @@ public class SizeDialogPanel extends JPanel {
       add(submitButton, BorderLayout.SOUTH);
    }
 
-   // to allow outside classes to get the text held by the JTextField
    public int getValue() {
       return value;
    }

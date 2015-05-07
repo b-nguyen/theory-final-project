@@ -39,8 +39,7 @@ public class MainPanel extends JPanel {
 	JPanel buttonPanel = new JPanel();
 	ButtonGroup radioButtonGroup = new ButtonGroup();
 
-	// here my main gui has a reference to the JDialog and to the
-	// MyDialogPanel which is displayed in the JDialog
+	// These are the dialog panels that come up for further options
 	private SizeDialogPanel sizeDialogPanel = new SizeDialogPanel();
 	private FileDialogPanel fileDialogPanel;
 	private SolutionsDialogPanel solutionsDialogPanel = new SolutionsDialogPanel();
@@ -51,6 +50,7 @@ public class MainPanel extends JPanel {
 	public MainPanel() {
 		setLayout(new BorderLayout(0, 0));
 
+		// Set buttons
 		buttonPanel.setBackground(UIManager.getColor("Slider.background"));
 		add(buttonPanel, BorderLayout.NORTH);
 		buttonPanel.add(importInputButton);
@@ -69,6 +69,7 @@ public class MainPanel extends JPanel {
 		solveButton.setEnabled(false);
 		add(solveButton, BorderLayout.SOUTH);
 
+		// Set listeners
 		importInputButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -94,7 +95,6 @@ public class MainPanel extends JPanel {
 		normalGridButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				//samuraiGridButton.setSelected(false);
 				samurai = false;
 			}
 		});
@@ -102,7 +102,6 @@ public class MainPanel extends JPanel {
 		samuraiGridButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				//normalGridButton.setSelected(false);
 				samurai = true;
 			}
 		});
@@ -115,6 +114,7 @@ public class MainPanel extends JPanel {
 		});
 	}
 
+	// Create Input for Normal Grid
 	public void createInput() {
 		// Get Size
 		sizeDialogPanel = new SizeDialogPanel();
@@ -151,14 +151,9 @@ public class MainPanel extends JPanel {
 		}
 		dialog.setVisible(true); // here the modal dialog takes over
 		difficulty = difficultyDialogPanel.getDfficulty();
-		
-		
-		//System.out.println("We got a size: " + 9);
 
 		SudokuGrid.generate(size, difficulty);
 		inputFile = new File("generated.txt");
-		//System.out.println(inputFile.getAbsolutePath());
-		//System.out.println(inputFile.getName());
 		createGridNormal(size, inputFile);
 		
 		solveButton.setEnabled(true);
@@ -166,6 +161,7 @@ public class MainPanel extends JPanel {
 		setVisible(true);
 	}
 	
+	// Read normal grid from user file
 	public void readFromUserNormal() {
 
 		sizeDialogPanel = new SizeDialogPanel();
@@ -175,7 +171,7 @@ public class MainPanel extends JPanel {
 		if (dialog == null) {
 			Window win = SwingUtilities.getWindowAncestor(this);
 			if (win != null) {
-				dialog = new JDialog(win, "Size dialog",
+				dialog = new JDialog(win, "Input Size",
 						ModalityType.APPLICATION_MODAL);
 				dialog.getContentPane().add(sizeDialogPanel);
 				dialog.pack();
@@ -187,9 +183,10 @@ public class MainPanel extends JPanel {
 		fileDialogPanel = new FileDialogPanel();
 		try {
 			inputFile = fileDialogPanel.getFile();
-		} catch (IllegalArgumentException e) {
+		} catch (Exception e) {
 			System.out.println("File not found");
 		}
+		
 		size = sizeDialogPanel.getValue();
 		createGridNormal(size, inputFile);
 		solveButton.setEnabled(true);
@@ -197,6 +194,7 @@ public class MainPanel extends JPanel {
 		setVisible(true);
 	}
 
+	// Create a normal grid off of the file given
 	public void createGridNormal(int size, File inputFile) {
 		grid = new SudokuGrid(size);
 		grid.readInputFile(inputFile);
@@ -240,6 +238,7 @@ public class MainPanel extends JPanel {
 		}
 	}
 
+	// Solve standard sudoku puzzle
 	public void solveNormalPuzzle() {
 		solutionsDialogPanel = new SolutionsDialogPanel();
 		solutionsDialogPanel.createNormalSolutions(grid, size);
@@ -258,6 +257,7 @@ public class MainPanel extends JPanel {
 		dialog.setVisible(true); // here the modal dialog takes over
 	}
 	
+	// Solve samurai sudoku puzzle
 	public void solveSamuraiPuzzle() {
 		System.out.println("Solving samurai");
 		solutionsDialogPanel = new SolutionsDialogPanel();
@@ -277,6 +277,7 @@ public class MainPanel extends JPanel {
 		dialog.setVisible(true); // here the modal dialog takes over
 	}
 
+	// Read user file for samurai
 	public void readFromUserSamurai() {
 		fileDialogPanel = new FileDialogPanel();
 		inputFile = fileDialogPanel.getFile();
@@ -286,6 +287,7 @@ public class MainPanel extends JPanel {
 		setVisible(true);
 	}
 
+	// Create samurai grid from input file
 	public void createGridSamurai(File inputFile) {
 		samGrid = new SamuraiGrid();
 		samGrid.readInputFile(inputFile);
@@ -294,6 +296,7 @@ public class MainPanel extends JPanel {
 
 		gridPanel.setLayout(new GridLayout(7, 7, 0, 0));
 
+		// Read separate grids
 		SudokuGrid leftTopGrid = samGrid.getGrids()[0];
 		SudokuGrid rightTopGrid = samGrid.getGrids()[1];
 		SudokuGrid middleGrid = samGrid.getGrids()[2];

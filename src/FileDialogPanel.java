@@ -40,13 +40,18 @@ class FileDialogPanel extends JPanel {
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			inputFile = fileChooser.getSelectedFile();
 			close();
+		} else if (returnValue == JFileChooser.CANCEL_OPTION || returnValue == JFileChooser.ERROR_OPTION) {
+			inputFile = null;
+			close();
 		} else {
+			inputFile = null;
 			close();
 		}
    }
 
    public File getFile() {
-      return inputFile;
+		   return inputFile;
+	   
    }
 
    public void close() {

@@ -6,8 +6,8 @@ import java.awt.BorderLayout;
 public class SudokuGUI {
 
 	private static void createAndShowUI() {
-		JFrame frame = new JFrame("SudokuGui2");
-		// frame.getContentPane().add(new MyFramePanel());
+		// Create the main frame.
+		JFrame frame = new JFrame("SudokuGui");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
@@ -17,6 +17,7 @@ public class SudokuGUI {
 		frame.setBounds(100, 100, 750, 750);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+		// Create the main panel, this will have all the content on it.
 		MainPanel mainPanel = new MainPanel();
 		frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
 

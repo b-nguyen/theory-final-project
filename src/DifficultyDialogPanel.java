@@ -82,7 +82,7 @@ public class DifficultyDialogPanel extends JPanel {
 		});
    }
 
-   // to allow outside classes to get the text held by the JTextField
+   
    public double getDfficulty() {
       return difficulty;
    }
